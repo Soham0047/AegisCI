@@ -1,0 +1,29 @@
+services:
+  api:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: bash -lc "pip install -U pip && pip install -e . && uvicorn backend.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+
+  dashboard:
+    image: node:20-slim
+    working_dir: /app/frontend
+    volumes:
+      - ./:/app
+    command: bash -lc "npm install && npm run dev"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  gateway:
+    image: node:20-slim
+    working_dir: /app/gateway
+    volumes:
+      - ./:/app
+    command: bash -lc "npm install && npm run dev"
+    ports:
+      - "9000:9000"

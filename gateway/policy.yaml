@@ -1,0 +1,15 @@
+# Baseline policy file (we'll harden later)
+tools:
+  allowlist:
+    - "search"
+    - "read_repo"
+    - "open_url"
+    - "create_pr_comment"
+safety:
+  require_human_approval_for:
+    - "send_email"
+    - "run_shell"
+secrets:
+  block_patterns:
+    - "AKIA"
+    - "-----BEGIN PRIVATE KEY-----"
