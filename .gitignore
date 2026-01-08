@@ -15,6 +15,7 @@ backend/data/
 node_modules/
 frontend/.next/
 frontend/out/
+frontend/test-results/
 gateway/dist/
 .env
 data/repos/*

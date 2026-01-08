@@ -106,3 +106,32 @@ class GatewayEventIn(BaseModel):
 
 class GatewayEventOut(GatewayEventIn):
     id: str
+
+
+class OrgConfigIn(BaseModel):
+    severity_threshold: str | None = None
+    tools_enabled: list[str] | None = None
+    patch_auto_suggest: bool | None = None
+    policy_overrides: dict[str, Any] | None = None
+
+
+class OrgConfigOut(BaseModel):
+    org: str
+    defaults: dict[str, Any]
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+class RepoConfigIn(BaseModel):
+    severity_threshold: str | None = None
+    tools_enabled: list[str] | None = None
+    patch_auto_suggest: bool | None = None
+    policy_overrides: dict[str, Any] | None = None
+
+
+class RepoConfigOut(BaseModel):
+    org: str
+    repo: str
+    settings: dict[str, Any]
+    created_at: str | None = None
+    updated_at: str | None = None

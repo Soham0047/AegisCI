@@ -37,6 +37,7 @@ def start_scan_pipeline(
         {
             "repo_root": repo_root,
             "commit": commit,
+            "repo": pr_info.get("repo") or "unknown",
             "pr": _redact_pr_info(pr_info),
         },
     )
@@ -150,6 +151,8 @@ def validate_patches(payload: dict[str, Any]) -> dict[str, Any]:
         finding_dir = Path("artifacts/patch_v1") / run_id / finding_id
         status = "rejected"
         reason = "no validated patch"
+        source = None
+        validation_time = None
         if selected:
             selection = json.loads((finding_dir / "selection.json").read_text(encoding="utf-8"))
             selected_info = next(
@@ -159,9 +162,11 @@ def validate_patches(payload: dict[str, Any]) -> dict[str, Any]:
             if selected_info and selected_info.get("validated"):
                 status = "validated"
                 reason = None
+                source = selected_info.get("source")
                 diff_path = _diff_path_for_candidate(finding_dir, selected)
                 if diff_path.exists():
                     final_diffs.append(diff_path.read_text(encoding="utf-8"))
+                validation_time = _load_validation_duration(finding_dir, selected)
         findings_status.append(
             {
                 "finding_id": finding_id,
@@ -171,6 +176,8 @@ def validate_patches(payload: dict[str, Any]) -> dict[str, Any]:
                 "end_line": _safe_end_line(payload, finding_id),
                 "status": status,
                 "reason": reason,
+                "source": source,
+                "validation_time": validation_time,
             }
         )
 
@@ -179,9 +186,21 @@ def validate_patches(payload: dict[str, Any]) -> dict[str, Any]:
     final_path.write_text(final_diff, encoding="utf-8")
 
     summary = _summarize(findings_status)
+    summary["avg_validation_time"] = _avg_validation_time(findings_status)
     payload["findings_status"] = findings_status
     payload["summary"] = summary
     payload["final_diff_path"] = str(final_path)
+    (job_dir / "patch_summary.json").write_text(
+        json.dumps(
+            {"summary": summary, "findings": findings_status, "run_id": run_id},
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    job_meta = store.get_job(job_id) or {}
+    metadata = job_meta.get("metadata", {})
+    metadata.update({"summary": summary, "run_id": run_id})
+    store.set_metadata(job_id, metadata)
     store.append_log(job_id, f"validate_patches validated={summary['validated']}")
     store.update_status(job_id, "pending_pr")
     return payload
@@ -280,6 +299,33 @@ def _summarize(findings_status: list[dict[str, Any]]) -> dict[str, int]:
     rejected = sum(1 for f in findings_status if f.get("status") == "rejected")
     patched = validated
     return {"total": total, "validated": validated, "rejected": rejected, "patched": patched}
+
+
+def _load_validation_duration(finding_dir: Path, candidate_id: str) -> float | None:
+    label = "det" if candidate_id == "det-0" else candidate_id.split("-")[-1]
+    report_path = finding_dir / f"validation_{label}.json"
+    if not report_path.exists():
+        return None
+    try:
+        report = json.loads(report_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    durations = [step.get("duration") for step in report.get("steps", [])]
+    durations = [float(d) for d in durations if isinstance(d, (int, float))]
+    if not durations:
+        return None
+    return sum(durations)
+
+
+def _avg_validation_time(findings_status: list[dict[str, Any]]) -> float | None:
+    times = [
+        item.get("validation_time")
+        for item in findings_status
+        if isinstance(item.get("validation_time"), (int, float))
+    ]
+    if not times:
+        return None
+    return sum(times) / len(times)
 
 
 def _safe_rule_id(payload: dict[str, Any], finding_id: str) -> str:
