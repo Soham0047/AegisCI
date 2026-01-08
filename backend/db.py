@@ -456,11 +456,17 @@ def _within_time(value: str | None, since: str | None, until: str | None) -> boo
         return True
     try:
         ts = datetime.fromisoformat(value)
+        # Make timezone-aware if naive (assume UTC)
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
     except ValueError:
         return True
     if since:
         try:
             since_ts = datetime.fromisoformat(since)
+            # Make timezone-aware if naive (assume UTC)
+            if since_ts.tzinfo is None:
+                since_ts = since_ts.replace(tzinfo=timezone.utc)
             if ts < since_ts:
                 return False
         except ValueError:
@@ -468,6 +474,9 @@ def _within_time(value: str | None, since: str | None, until: str | None) -> boo
     if until:
         try:
             until_ts = datetime.fromisoformat(until)
+            # Make timezone-aware if naive (assume UTC)
+            if until_ts.tzinfo is None:
+                until_ts = until_ts.replace(tzinfo=timezone.utc)
             if ts > until_ts:
                 return False
         except ValueError:
