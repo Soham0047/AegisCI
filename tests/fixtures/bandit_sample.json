@@ -1,0 +1,13 @@
+{
+  "results": [
+    {
+      "filename": "src/app.py",
+      "line_number": 3,
+      "test_id": "B101",
+      "issue_severity": "HIGH",
+      "issue_confidence": "MEDIUM",
+      "issue_text": "Use of assert detected.",
+      "issue_name": "assert_used"
+    }
+  ]
+}

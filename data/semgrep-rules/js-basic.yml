@@ -1,0 +1,24 @@
+rules:
+  - id: js-eval
+    pattern: eval(...)
+    message: "Use of eval"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  - id: js-new-function
+    pattern: new Function(...)
+    message: "Use of new Function"
+    languages: [javascript, typescript]
+    severity: ERROR
+
+  - id: js-innerhtml
+    pattern: $X.innerHTML = $Y
+    message: "Direct innerHTML assignment"
+    languages: [javascript, typescript]
+    severity: WARNING
+
+  - id: js-document-write
+    pattern: document.write(...)
+    message: "Use of document.write"
+    languages: [javascript, typescript]
+    severity: WARNING

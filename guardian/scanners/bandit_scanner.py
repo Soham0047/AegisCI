@@ -1,9 +1,9 @@
 import json
 import subprocess
-from typing import Any, Dict, List
+from typing import Any
 
 
-def run_bandit(py_files: List[str]) -> Dict[str, Any]:
+def run_bandit(py_files: list[str]) -> dict[str, Any]:
     """Run Bandit on provided Python files. Returns JSON-like dict."""
     if not py_files:
         return {"results": [], "errors": []}

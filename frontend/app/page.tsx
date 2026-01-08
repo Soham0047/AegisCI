@@ -4,11 +4,12 @@ type Report = {
   id: number;
   repo: string;
   pr_number: number;
-  sha: string;
+  commit_sha: string;
   created_at: string;
   findings: {
-    bandit: any[];
-    semgrep: any[];
+    bandit: number;
+    semgrep: number;
+    total: number;
   };
 };
 
@@ -34,14 +35,20 @@ export default async function Page() {
             <div key={r.id} style={{ border: "1px solid #eee", borderRadius: 10, padding: 12 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
                 <div>
-                  <div style={{ fontWeight: 600 }}>{r.repo} • PR #{r.pr_number}</div>
+                  <div style={{ fontWeight: 600 }}>
+                    {r.repo} • PR #{r.pr_number}
+                  </div>
                   <div style={{ color: "#666", fontSize: 12 }}>
-                    {new Date(r.created_at).toLocaleString()} • {r.sha.slice(0, 8)}
+                    {new Date(r.created_at).toLocaleString()} • {r.commit_sha.slice(0, 8)}
                   </div>
                 </div>
                 <div style={{ textAlign: "right", fontSize: 12, color: "#333" }}>
-                  <div>Bandit: <b>{r.findings.bandit?.length ?? 0}</b></div>
-                  <div>Semgrep: <b>{r.findings.semgrep?.length ?? 0}</b></div>
+                  <div>
+                    Bandit: <b>{r.findings.bandit ?? 0}</b>
+                  </div>
+                  <div>
+                    Semgrep: <b>{r.findings.semgrep ?? 0}</b>
+                  </div>
                 </div>
               </div>
             </div>
@@ -52,7 +59,9 @@ export default async function Page() {
       <hr style={{ margin: "24px 0", border: "none", borderTop: "1px solid #eee" }} />
       <h3>Next</h3>
       <ul>
-        <li>Wire the GitHub Action to POST <code>report.json</code> into the backend.</li>
+        <li>
+          Wire the GitHub Action to POST <code>report.json</code> into the backend.
+        </li>
         <li>Add patch suggestions + test validation.</li>
         <li>Add DL risk scoring service.</li>
       </ul>

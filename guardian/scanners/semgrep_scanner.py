@@ -1,9 +1,9 @@
 import json
 import subprocess
-from typing import Any, Dict, List
+from typing import Any
 
 
-def run_semgrep(files: List[str], config: str = "p/ci") -> Dict[str, Any]:
+def run_semgrep(files: list[str], config: str = "p/ci") -> dict[str, Any]:
     """Run Semgrep on provided files. Returns JSON-like dict."""
     if not files:
         return {"results": [], "errors": []}

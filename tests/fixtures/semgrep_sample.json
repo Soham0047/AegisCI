@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "check_id": "js.eval",
+      "path": "web/app.js",
+      "start": {"line": 5},
+      "end": {"line": 5},
+      "extra": {"message": "Avoid eval", "severity": "WARNING"}
+    }
+  ]
+}

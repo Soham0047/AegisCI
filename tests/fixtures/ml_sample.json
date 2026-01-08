@@ -1,0 +1,11 @@
+[
+  {
+    "sample_id": "sample-1",
+    "filepath": "src/app.py",
+    "span": {"start_line": 3, "end_line": 3},
+    "risk_score": 0.82,
+    "top_categories": [{"category": "injection.sql", "confidence": 0.77}],
+    "model": "transformer_v3_final",
+    "calibrated": true
+  }
+]

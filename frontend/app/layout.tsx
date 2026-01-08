@@ -2,7 +2,7 @@ import React from "react";
 
 export const metadata = {
   title: "SecureDev Guardian",
-  description: "Baseline dashboard"
+  description: "Baseline dashboard",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

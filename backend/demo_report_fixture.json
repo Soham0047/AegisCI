@@ -1,0 +1,18 @@
+{
+  "bandit": {
+    "results": [
+      {
+        "filename": "app.py",
+        "line_number": 2,
+        "test_id": "B602",
+        "issue_severity": "HIGH",
+        "issue_confidence": "HIGH",
+        "issue_text": "subprocess call with shell=True",
+        "issue_name": "shell_injection"
+      }
+    ]
+  },
+  "semgrep": {
+    "results": []
+  }
+}

@@ -1,15 +1,60 @@
-# Baseline policy file (we'll harden later)
+version: 1
 tools:
-  allowlist:
-    - "search"
-    - "read_repo"
-    - "open_url"
-    - "create_pr_comment"
-safety:
-  require_human_approval_for:
-    - "send_email"
-    - "run_shell"
-secrets:
-  block_patterns:
-    - "AKIA"
-    - "-----BEGIN PRIVATE KEY-----"
+  - name: "github.create_or_update_comment"
+    allowed: true
+    scopes: ["write"]
+    requires_approval: true
+    arg_constraints:
+      type: object
+      properties:
+        repo: { type: string }
+        pr_number: { type: number }
+        body: { type: string }
+        token: { type: string }
+      required: ["repo", "pr_number", "body"]
+      additionalProperties: true
+    redaction:
+      mode: "mask"
+      patterns: ["github_token", "generic_bearer"]
+    output:
+      allow_code: false
+      blocklist_patterns: ["rm -rf", "curl | sh", "DROP TABLE"]
+  - name: "validator.run"
+    allowed: true
+    scopes: ["read", "write"]
+    requires_approval: false
+    arg_constraints:
+      type: object
+      properties:
+        repo: { type: string }
+        commit: { type: string }
+        patch: { type: string }
+      required: ["repo", "commit", "patch"]
+      additionalProperties: true
+    redaction:
+      mode: "mask"
+  - name: "fs.read"
+    allowed: true
+    scopes: ["read"]
+    requires_approval: false
+    arg_constraints:
+      type: object
+      properties:
+        path: { type: string }
+      required: ["path"]
+      additionalProperties: false
+    redaction:
+      mode: "mask"
+  - name: "fs.write"
+    allowed: true
+    scopes: ["write"]
+    requires_approval: true
+    arg_constraints:
+      type: object
+      properties:
+        path: { type: string }
+        content: { type: string }
+      required: ["path", "content"]
+      additionalProperties: false
+    redaction:
+      mode: "deny"

@@ -8,6 +8,7 @@ build/
 .coverage
 .mypy_cache/
 .pytest_cache/
+.DS_Store
 report.md
 report.json
 backend/data/
@@ -16,3 +17,25 @@ frontend/.next/
 frontend/out/
 gateway/dist/
 .env
+data/repos/*
+!data/repos/.gitkeep
+data/tool_outputs/*
+datasets/*
+!datasets/.gitkeep
+
+# Artifacts - exclude temporary outputs
+artifacts/jobs/
+artifacts/patch_v1/
+artifacts/gateway_events/
+artifacts/validation/
+artifacts/*.json
+artifacts/*.log
+
+# Keep trained models
+!artifacts/*.pt
+
+# RAG store (regenerated on demand)
+rag/store/*.sqlite
+
+# Large model files (use Git LFS or download separately)
+artifacts/*.pt

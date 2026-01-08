@@ -1,0 +1,485 @@
+{
+  "bandit": {
+    "errors": [],
+    "generated_at": "2026-01-08T00:09:54Z",
+    "metrics": {
+      "./backend/__init__.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 1,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./backend/config.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 4,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./backend/db.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 11,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./backend/main.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 57,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./backend/models.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 39,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./backend/schemas.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 68,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./backend/services.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 135,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./guardian/__init__.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 1,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./guardian/cli.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 55,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./guardian/git_utils.py": {
+        "CONFIDENCE.HIGH": 2,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 2,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 28,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./guardian/report.py": {
+        "CONFIDENCE.HIGH": 3,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 3,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 250,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./guardian/scanners/__init__.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 1,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./guardian/scanners/bandit_scanner.py": {
+        "CONFIDENCE.HIGH": 2,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 2,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 18,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./guardian/scanners/semgrep_scanner.py": {
+        "CONFIDENCE.HIGH": 2,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 2,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 18,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "./scripts/post_report.py": {
+        "CONFIDENCE.HIGH": 0,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 0,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 19,
+        "nosec": 0,
+        "skipped_tests": 0
+      },
+      "_totals": {
+        "CONFIDENCE.HIGH": 9,
+        "CONFIDENCE.LOW": 0,
+        "CONFIDENCE.MEDIUM": 0,
+        "CONFIDENCE.UNDEFINED": 0,
+        "SEVERITY.HIGH": 0,
+        "SEVERITY.LOW": 9,
+        "SEVERITY.MEDIUM": 0,
+        "SEVERITY.UNDEFINED": 0,
+        "loc": 705,
+        "nosec": 0,
+        "skipped_tests": 0
+      }
+    },
+    "results": [
+      {
+        "code": "1 import subprocess\n2 \n3 \n",
+        "col_offset": 0,
+        "end_col_offset": 17,
+        "filename": "./guardian/git_utils.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "Consider possible security implications associated with the subprocess module.",
+        "line_number": 1,
+        "line_range": [
+          1
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b404-import-subprocess",
+        "test_id": "B404",
+        "test_name": "blacklist"
+      },
+      {
+        "code": "5     try:\n6         return subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL).strip()\n7     except subprocess.CalledProcessError:\n",
+        "col_offset": 15,
+        "end_col_offset": 81,
+        "filename": "./guardian/git_utils.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "subprocess call - check for execution of untrusted input.",
+        "line_number": 6,
+        "line_range": [
+          6
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/plugins/b603_subprocess_without_shell_equals_true.html",
+        "test_id": "B603",
+        "test_name": "subprocess_without_shell_equals_true"
+      },
+      {
+        "code": "3 import json\n4 import subprocess\n5 from dataclasses import dataclass\n",
+        "col_offset": 0,
+        "end_col_offset": 17,
+        "filename": "./guardian/report.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "Consider possible security implications associated with the subprocess module.",
+        "line_number": 4,
+        "line_range": [
+          4
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b404-import-subprocess",
+        "test_id": "B404",
+        "test_name": "blacklist"
+      },
+      {
+        "code": "58     try:\n59         return subprocess.check_output([\"git\", \"rev-parse\", \"HEAD\"], text=True).strip()\n60     except Exception:\n",
+        "col_offset": 15,
+        "end_col_offset": 79,
+        "filename": "./guardian/report.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "Starting a process with a partial executable path",
+        "line_number": 59,
+        "line_range": [
+          59
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/plugins/b607_start_process_with_partial_path.html",
+        "test_id": "B607",
+        "test_name": "start_process_with_partial_path"
+      },
+      {
+        "code": "58     try:\n59         return subprocess.check_output([\"git\", \"rev-parse\", \"HEAD\"], text=True).strip()\n60     except Exception:\n",
+        "col_offset": 15,
+        "end_col_offset": 79,
+        "filename": "./guardian/report.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "subprocess call - check for execution of untrusted input.",
+        "line_number": 59,
+        "line_range": [
+          59
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/plugins/b603_subprocess_without_shell_equals_true.html",
+        "test_id": "B603",
+        "test_name": "subprocess_without_shell_equals_true"
+      },
+      {
+        "code": "1 import json\n2 import subprocess\n3 from typing import Any\n",
+        "col_offset": 0,
+        "end_col_offset": 17,
+        "filename": "./guardian/scanners/bandit_scanner.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "Consider possible security implications associated with the subprocess module.",
+        "line_number": 2,
+        "line_range": [
+          2
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b404-import-subprocess",
+        "test_id": "B404",
+        "test_name": "blacklist"
+      },
+      {
+        "code": "12     try:\n13         out = subprocess.check_output(cmd, text=True)\n14         return json.loads(out)\n",
+        "col_offset": 14,
+        "end_col_offset": 53,
+        "filename": "./guardian/scanners/bandit_scanner.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "subprocess call - check for execution of untrusted input.",
+        "line_number": 13,
+        "line_range": [
+          13
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/plugins/b603_subprocess_without_shell_equals_true.html",
+        "test_id": "B603",
+        "test_name": "subprocess_without_shell_equals_true"
+      },
+      {
+        "code": "1 import json\n2 import subprocess\n3 from typing import Any\n",
+        "col_offset": 0,
+        "end_col_offset": 17,
+        "filename": "./guardian/scanners/semgrep_scanner.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "Consider possible security implications associated with the subprocess module.",
+        "line_number": 2,
+        "line_range": [
+          2
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/blacklists/blacklist_imports.html#b404-import-subprocess",
+        "test_id": "B404",
+        "test_name": "blacklist"
+      },
+      {
+        "code": "12     try:\n13         out = subprocess.check_output(cmd, text=True)\n14         return json.loads(out)\n",
+        "col_offset": 14,
+        "end_col_offset": 53,
+        "filename": "./guardian/scanners/semgrep_scanner.py",
+        "issue_confidence": "HIGH",
+        "issue_cwe": {
+          "id": 78,
+          "link": "https://cwe.mitre.org/data/definitions/78.html"
+        },
+        "issue_severity": "LOW",
+        "issue_text": "subprocess call - check for execution of untrusted input.",
+        "line_number": 13,
+        "line_range": [
+          13
+        ],
+        "more_info": "https://bandit.readthedocs.io/en/1.9.2/plugins/b603_subprocess_without_shell_equals_true.html",
+        "test_id": "B603",
+        "test_name": "subprocess_without_shell_equals_true"
+      }
+    ]
+  },
+  "semgrep": {
+    "version": "1.146.0",
+    "results": [],
+    "errors": [],
+    "paths": {
+      "scanned": [
+        "frontend/app/layout.tsx",
+        "frontend/app/page.tsx",
+        "frontend/next-env.d.ts",
+        "frontend/next.config.js",
+        "gateway/src/index.ts"
+      ]
+    },
+    "time": {
+      "rules": [],
+      "rules_parse_time": 0.13263392448425293,
+      "profiling_times": {
+        "config_time": 1.2101259231567383,
+        "core_time": 1.2025690078735352,
+        "ignores_time": 0.00015401840209960938,
+        "total_time": 2.4185869693756104
+      },
+      "parsing_time": {
+        "total_time": 0.0,
+        "per_file_time": {
+          "mean": 0.0,
+          "std_dev": 0.0
+        },
+        "very_slow_stats": {
+          "time_ratio": 0.0,
+          "count_ratio": 0.0
+        },
+        "very_slow_files": []
+      },
+      "scanning_time": {
+        "total_time": 0.012885570526123047,
+        "per_file_time": {
+          "mean": 0.0008590380350748696,
+          "std_dev": 7.309337393558558e-07
+        },
+        "very_slow_stats": {
+          "time_ratio": 0.0,
+          "count_ratio": 0.0
+        },
+        "very_slow_files": []
+      },
+      "matching_time": {
+        "total_time": 0.0,
+        "per_file_and_rule_time": {
+          "mean": 0.0,
+          "std_dev": 0.0
+        },
+        "very_slow_stats": {
+          "time_ratio": 0.0,
+          "count_ratio": 0.0
+        },
+        "very_slow_rules_on_files": []
+      },
+      "tainting_time": {
+        "total_time": 0.0,
+        "per_def_and_rule_time": {
+          "mean": 0.0,
+          "std_dev": 0.0
+        },
+        "very_slow_stats": {
+          "time_ratio": 0.0,
+          "count_ratio": 0.0
+        },
+        "very_slow_rules_on_defs": []
+      },
+      "fixpoint_timeouts": [],
+      "prefiltering": {
+        "project_level_time": 0.0,
+        "file_level_time": 0.0,
+        "rules_with_project_prefilters_ratio": 0.0,
+        "rules_with_file_prefilters_ratio": 1.0,
+        "rules_selected_ratio": 0.0,
+        "rules_matched_ratio": 0.0
+      },
+      "targets": [],
+      "total_bytes": 0,
+      "max_memory_bytes": 229510400
+    },
+    "engine_requested": "OSS",
+    "skipped_rules": [],
+    "profiling_results": []
+  }
+}
