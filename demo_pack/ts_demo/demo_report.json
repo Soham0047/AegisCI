@@ -1,0 +1,36 @@
+{
+  "bandit": {},
+  "semgrep": {
+    "results": [
+      {
+        "check_id": "typescript.browser.security.insecure-innerhtml",
+        "path": "src/app.ts",
+        "start": {"line": 14, "col": 3},
+        "end": {"line": 14, "col": 28},
+        "extra": {
+          "message": "Detected innerHTML being set with a variable. If this data is user-provided, this is a cross-site scripting (XSS) vulnerability.",
+          "severity": "WARNING",
+          "metadata": {
+            "category": "security",
+            "technology": ["typescript"]
+          }
+        }
+      },
+      {
+        "check_id": "javascript.lang.security.detect-eval-with-expression",
+        "path": "src/app.ts",
+        "start": {"line": 22, "col": 10},
+        "end": {"line": 22, "col": 27},
+        "extra": {
+          "message": "Detected eval() with a non-literal argument. This is dangerous and can lead to code injection.",
+          "severity": "ERROR",
+          "metadata": {
+            "category": "security",
+            "technology": ["javascript", "typescript"]
+          }
+        }
+      }
+    ],
+    "errors": []
+  }
+}

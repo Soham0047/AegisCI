@@ -1,0 +1,30 @@
+{
+  "bandit": {
+    "results": [
+      {
+        "code": "8         result = subprocess.run(f\"ls {directory}\", shell=True, capture_output=True, text=True)\n",
+        "filename": "app.py",
+        "issue_confidence": "HIGH",
+        "issue_severity": "HIGH",
+        "issue_text": "subprocess call with shell=True identified, security issue.",
+        "line_number": 8,
+        "line_range": [8],
+        "more_info": "https://bandit.readthedocs.io/en/latest/plugins/b602_subprocess_popen_with_shell_equals_true.html",
+        "test_id": "B602",
+        "test_name": "subprocess_popen_with_shell_equals_true"
+      }
+    ],
+    "metrics": {
+      "_totals": {
+        "CONFIDENCE.HIGH": 1,
+        "SEVERITY.HIGH": 1,
+        "loc": 22,
+        "nosec": 0
+      }
+    }
+  },
+  "semgrep": {
+    "results": [],
+    "errors": []
+  }
+}

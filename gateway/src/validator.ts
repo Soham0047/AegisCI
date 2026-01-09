@@ -20,6 +20,7 @@ export function validateToolCall(request: ToolCallRequest, policy?: Policy): Too
   }
 
   const { sanitized, findings } = redactObject(args);
+  const sanitizedArgs = sanitized as Record<string, unknown>;
   const redactionPatterns = tool.redaction?.patterns;
   const relevantFindings =
     redactionPatterns && redactionPatterns.length > 0
@@ -33,15 +34,15 @@ export function validateToolCall(request: ToolCallRequest, policy?: Policy): Too
       "deny",
       `secret detected: ${relevantFindings[0].type}`,
       tool,
-      sanitized,
+      sanitizedArgs,
     );
   }
   const requiresApproval = tool.requires_approval || request.requires_approval;
   if (requiresApproval && !request.approved) {
-    return buildDecision(request, "require_approval", "approval required", tool, sanitized);
+    return buildDecision(request, "require_approval", "approval required", tool, sanitizedArgs);
   }
   const decision = hasSecret ? "mask" : "allow";
-  return buildDecision(request, decision, "allowed", tool, sanitized);
+  return buildDecision(request, decision, "allowed", tool, sanitizedArgs);
 }
 
 function buildDecision(
@@ -51,7 +52,7 @@ function buildDecision(
   tool?: ToolPolicy,
   sanitizedArgs?: Record<string, unknown>,
 ): ToolDecision {
-  const sanitized = sanitizedArgs ?? request.args;
+  const sanitized = sanitizedArgs ?? request.args ?? {};
   const argsHash = hashArgs(sanitized);
   return {
     decision,

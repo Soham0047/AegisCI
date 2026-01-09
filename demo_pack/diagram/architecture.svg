@@ -1,0 +1,227 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+    </filter>
+    <linearGradient id="headerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4F46E5;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <rect x="0" y="0" width="1200" height="60" fill="url(#headerGrad)"/>
+  <text x="600" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="24" font-weight="bold" fill="white">
+    SecureDev Guardian - Architecture Overview
+  </text>
+
+  <!-- Legend -->
+  <g transform="translate(950, 80)">
+    <rect x="0" y="0" width="230" height="120" rx="8" fill="white" stroke="#e2e8f0" filter="url(#shadow)"/>
+    <text x="115" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="bold" fill="#374151">Legend</text>
+    <rect x="15" y="40" width="20" height="15" rx="3" fill="#dbeafe" stroke="#3b82f6"/>
+    <text x="45" y="52" font-family="system-ui, sans-serif" font-size="11" fill="#374151">Input/Output</text>
+    <rect x="15" y="65" width="20" height="15" rx="3" fill="#dcfce7" stroke="#22c55e"/>
+    <text x="45" y="77" font-family="system-ui, sans-serif" font-size="11" fill="#374151">Processing</text>
+    <rect x="15" y="90" width="20" height="15" rx="3" fill="#fef3c7" stroke="#f59e0b"/>
+    <text x="45" y="102" font-family="system-ui, sans-serif" font-size="11" fill="#374151">Security Layer</text>
+  </g>
+
+  <!-- Demo callouts -->
+  <g transform="translate(20, 80)">
+    <rect x="0" y="0" width="180" height="80" rx="8" fill="#ede9fe" stroke="#8b5cf6" stroke-width="2" filter="url(#shadow)"/>
+    <text x="90" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#5b21b6">🐍 Python Demo</text>
+    <text x="90" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">subprocess shell=True</text>
+    <text x="90" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">→ shell=False fix</text>
+    <text x="90" y="70" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Bandit B602</text>
+  </g>
+
+  <g transform="translate(210, 80)">
+    <rect x="0" y="0" width="180" height="80" rx="8" fill="#e0f2fe" stroke="#0ea5e9" stroke-width="2" filter="url(#shadow)"/>
+    <text x="90" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#0369a1">📘 TypeScript Demo</text>
+    <text x="90" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">innerHTML XSS</text>
+    <text x="90" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">→ textContent fix</text>
+    <text x="90" y="70" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">eval → JSON.parse</text>
+  </g>
+
+  <g transform="translate(400, 80)">
+    <rect x="0" y="0" width="180" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+    <text x="90" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#b45309">🛡️ Gateway Demo</text>
+    <text x="90" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Policy enforcement</text>
+    <text x="90" y="56" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Tool call validation</text>
+    <text x="90" y="70" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Audit logging</text>
+  </g>
+
+  <!-- Main Pipeline Flow -->
+
+  <!-- 1. PR/Code Input -->
+  <g transform="translate(80, 220)">
+    <rect x="0" y="0" width="140" height="70" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+    <text x="70" y="30" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#1e40af">📝 PR / Code</text>
+    <text x="70" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Repository</text>
+  </g>
+
+  <!-- Arrow 1→2 -->
+  <line x1="220" y1="255" x2="270" y2="255" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 2. Security Scanners -->
+  <g transform="translate(280, 200)">
+    <rect x="0" y="0" width="150" height="110" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="2" filter="url(#shadow)"/>
+    <text x="75" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#166534">🔍 Scanners</text>
+    <text x="75" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Bandit (Python)</text>
+    <text x="75" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Semgrep (Multi)</text>
+    <text x="75" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">ESLint (JS/TS)</text>
+  </g>
+
+  <!-- Arrow 2→3 -->
+  <line x1="430" y1="255" x2="480" y2="255" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 3. Backend Ingest -->
+  <g transform="translate(490, 210)">
+    <rect x="0" y="0" width="140" height="90" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="2" filter="url(#shadow)"/>
+    <text x="70" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#166534">⚙️ Backend</text>
+    <text x="70" y="48" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Ingest Report</text>
+    <text x="70" y="66" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Normalize Findings</text>
+    <text x="70" y="84" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Job Store (SQLite)</text>
+  </g>
+
+  <!-- Arrow 3→4 -->
+  <line x1="630" y1="255" x2="680" y2="255" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 4. Orchestrator -->
+  <g transform="translate(690, 190)">
+    <rect x="0" y="0" width="160" height="130" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="2" filter="url(#shadow)"/>
+    <text x="80" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#166534">🎯 Orchestrator</text>
+    <text x="80" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">RAG Retrieval</text>
+    <text x="80" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Template Patches</text>
+    <text x="80" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">LLM Candidates</text>
+    <text x="80" y="104" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">DL Reranking</text>
+  </g>
+
+  <!-- Arrow 4→5 -->
+  <line x1="850" y1="255" x2="900" y2="255" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 5. Validator -->
+  <g transform="translate(910, 200)">
+    <rect x="0" y="0" width="150" height="110" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="2" filter="url(#shadow)"/>
+    <text x="75" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#166534">🐳 Validator</text>
+    <text x="75" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Docker Container</text>
+    <text x="75" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Apply Patch</text>
+    <text x="75" y="86" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Run Tests</text>
+  </g>
+
+  <!-- Arrow down from Validator -->
+  <line x1="985" y1="310" x2="985" y2="360" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 6. Ranker -->
+  <g transform="translate(910, 370)">
+    <rect x="0" y="0" width="150" height="90" rx="10" fill="#dcfce7" stroke="#22c55e" stroke-width="2" filter="url(#shadow)"/>
+    <text x="75" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#166534">📊 Ranker</text>
+    <text x="75" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">DL Patch Ranker</text>
+    <text x="75" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Select Best Patch</text>
+  </g>
+
+  <!-- Arrow left from Ranker -->
+  <line x1="910" y1="415" x2="860" y2="415" stroke="#666" stroke-width="2" marker-end="url(#arrowhead)"/>
+
+  <!-- 7. PR Update -->
+  <g transform="translate(690, 370)">
+    <rect x="0" y="0" width="160" height="90" rx="10" fill="#dbeafe" stroke="#3b82f6" stroke-width="2" filter="url(#shadow)"/>
+    <text x="80" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="bold" fill="#1e40af">💬 PR Update</text>
+    <text x="80" y="50" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Render Comment</text>
+    <text x="80" y="68" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#6b7280">Post to GitHub</text>
+  </g>
+
+  <!-- Gateway Section (bottom) -->
+  <g transform="translate(80, 520)">
+    <rect x="0" y="0" width="450" height="180" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" filter="url(#shadow)"/>
+    <text x="225" y="30" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="bold" fill="#b45309">🛡️ LLM Security Gateway</text>
+
+    <!-- Policy -->
+    <g transform="translate(20, 50)">
+      <rect x="0" y="0" width="120" height="60" rx="6" fill="white" stroke="#d97706"/>
+      <text x="60" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#92400e">📋 Policy</text>
+      <text x="60" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Allowlist</text>
+      <text x="60" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Scopes</text>
+    </g>
+
+    <!-- Validator -->
+    <g transform="translate(160, 50)">
+      <rect x="0" y="0" width="120" height="60" rx="6" fill="white" stroke="#d97706"/>
+      <text x="60" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#92400e">✓ Validate</text>
+      <text x="60" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Tool Calls</text>
+      <text x="60" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Arguments</text>
+    </g>
+
+    <!-- Redactor -->
+    <g transform="translate(300, 50)">
+      <rect x="0" y="0" width="120" height="60" rx="6" fill="white" stroke="#d97706"/>
+      <text x="60" y="25" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#92400e">🔒 Redact</text>
+      <text x="60" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Secrets</text>
+      <text x="60" y="55" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Tokens</text>
+    </g>
+
+    <!-- Audit -->
+    <g transform="translate(160, 125)">
+      <rect x="0" y="0" width="120" height="45" rx="6" fill="white" stroke="#d97706"/>
+      <text x="60" y="20" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#92400e">📝 Audit Log</text>
+      <text x="60" y="36" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">All Decisions</text>
+    </g>
+  </g>
+
+  <!-- Dashboard Section -->
+  <g transform="translate(590, 520)">
+    <rect x="0" y="0" width="470" height="180" rx="10" fill="#e0e7ff" stroke="#6366f1" stroke-width="2" filter="url(#shadow)"/>
+    <text x="235" y="30" text-anchor="middle" font-family="system-ui, sans-serif" font-size="15" font-weight="bold" fill="#4338ca">📊 Dashboard (Next.js)</text>
+
+    <!-- Reports -->
+    <g transform="translate(20, 50)">
+      <rect x="0" y="0" width="100" height="50" rx="6" fill="white" stroke="#818cf8"/>
+      <text x="50" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#4f46e5">/reports</text>
+      <text x="50" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Scan History</text>
+    </g>
+
+    <!-- Patches -->
+    <g transform="translate(135, 50)">
+      <rect x="0" y="0" width="100" height="50" rx="6" fill="white" stroke="#818cf8"/>
+      <text x="50" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#4f46e5">/patches</text>
+      <text x="50" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Patch Status</text>
+    </g>
+
+    <!-- Gateway -->
+    <g transform="translate(250, 50)">
+      <rect x="0" y="0" width="100" height="50" rx="6" fill="white" stroke="#818cf8"/>
+      <text x="50" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#4f46e5">/gateway</text>
+      <text x="50" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Audit Events</text>
+    </g>
+
+    <!-- API -->
+    <g transform="translate(365, 50)">
+      <rect x="0" y="0" width="85" height="50" rx="6" fill="white" stroke="#818cf8"/>
+      <text x="42" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#4f46e5">REST API</text>
+      <text x="42" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">FastAPI</text>
+    </g>
+
+    <!-- Stores -->
+    <g transform="translate(100, 115)">
+      <rect x="0" y="0" width="280" height="50" rx="6" fill="white" stroke="#818cf8"/>
+      <text x="140" y="22" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="bold" fill="#4f46e5">💾 SQLite Stores</text>
+      <text x="140" y="40" text-anchor="middle" font-family="system-ui, sans-serif" font-size="10" fill="#6b7280">Jobs | Events | Config | Outcomes</text>
+    </g>
+  </g>
+
+  <!-- Connecting arrows between sections -->
+  <path d="M 770 460 L 770 510" stroke="#666" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+  <path d="M 530 510 L 530 520" stroke="#666" stroke-width="2" stroke-dasharray="5,5" marker-end="url(#arrowhead)"/>
+
+  <!-- Footer -->
+  <text x="600" y="780" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" fill="#9ca3af">
+    SecureDev Guardian • Automated Security Patching Pipeline • github.com/securedev
+  </text>
+</svg>
