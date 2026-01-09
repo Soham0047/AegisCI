@@ -30,7 +30,7 @@ gateway:
 
 scan:
 	@echo "Running guardian scan against base ref: $(BASE)"
-	guardian scan --base-ref $(BASE)
+	guardian --base-ref $(BASE)
 
 lint-py:
 	@echo "Running ruff lint..."

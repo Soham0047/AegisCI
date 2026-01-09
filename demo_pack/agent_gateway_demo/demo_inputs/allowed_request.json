@@ -1,11 +1,9 @@
 {
-  "request": {
-    "tool": "fs.read",
-    "args": {
-      "path": "/app/config.json"
-    },
-    "caller": "demo_agent",
-    "correlation_id": "demo-001",
-    "scope": "read"
-  }
+  "tool": "fs.read",
+  "args": {
+    "path": "/app/config.json"
+  },
+  "caller": "demo_agent",
+  "correlation_id": "demo-001",
+  "scope": "read"
 }

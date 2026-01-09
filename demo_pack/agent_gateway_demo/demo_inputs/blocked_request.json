@@ -1,12 +1,10 @@
 {
-  "request": {
-    "tool": "shell.exec",
-    "args": {
-      "command": "rm -rf /",
-      "user": "root"
-    },
-    "caller": "demo_agent",
-    "correlation_id": "demo-002",
-    "scope": "write"
-  }
+  "tool": "shell.exec",
+  "args": {
+    "command": "rm -rf /",
+    "user": "root"
+  },
+  "caller": "demo_agent",
+  "correlation_id": "demo-002",
+  "scope": "write"
 }

@@ -3,46 +3,92 @@ services:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   api:
-    image: python:3.11-slim
-    working_dir: /app
-    volumes:
-      - ./:/app
-    command: bash -lc "pip install -U pip && pip install -e . && uvicorn backend.main:app --host 0.0.0.0 --port 8000"
+    build:
+      context: .
+      dockerfile: Dockerfile.api
     ports:
       - "8000:8000"
+    environment:
+      - APP_ENV=production
+      - DEBUG=false
+      - LOG_LEVEL=INFO
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+    volumes:
+      - ./backend/data:/app/backend/data
+      - ./artifacts:/app/artifacts
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   dashboard:
-    image: node:20-slim
-    working_dir: /app/frontend
-    volumes:
-      - ./:/app
-    command: bash -lc "npm install && npm run dev"
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
     ports:
       - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_BASE=http://api:8000
+      - NODE_ENV=production
     depends_on:
-      - api
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   gateway:
-    image: node:20-slim
-    working_dir: /app/gateway
-    volumes:
-      - ./:/app
-    command: bash -lc "npm install && npm run dev"
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
     ports:
       - "9000:9000"
+    environment:
+      - NODE_ENV=production
+      - GATEWAY_PORT=9000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
 
   worker:
-    image: python:3.11-slim
-    working_dir: /app
-    volumes:
-      - ./:/app
-    command: bash -lc "pip install -U pip && pip install -e . && celery -A backend.celery_app.celery_app worker --loglevel=info"
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    command: celery -A backend.celery_app.celery_app worker --loglevel=info --concurrency=2
     environment:
-      CELERY_BROKER_URL: redis://redis:6379/0
-      CELERY_RESULT_BACKEND: redis://redis:6379/0
+      - APP_ENV=production
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./backend/data:/app/backend/data
+      - ./artifacts:/app/artifacts
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  redis_data:

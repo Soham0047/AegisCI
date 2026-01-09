@@ -35,15 +35,8 @@ if [ ! -d "gateway/node_modules" ]; then
     cd "$REPO_ROOT"
 fi
 
-# Build gateway if needed
-if [ ! -f "gateway/dist/scripts/gateway_cli.js" ]; then
-    echo "Building gateway..."
-    cd gateway
-    npm run build --silent 2>/dev/null || npm run build
-    cd "$REPO_ROOT"
-fi
-
-GATEWAY_CLI="node gateway/dist/scripts/gateway_cli.js"
+# Use npx tsx to run TypeScript directly (avoids ESM import issues)
+GATEWAY_CLI="npx tsx gateway/src/scripts/gateway_cli.ts"
 
 echo "Step 1: Test ALLOWED tool call (fs.read)"
 echo "----------------------------------------"
@@ -52,12 +45,14 @@ cat "$DEMO_DIR/demo_inputs/allowed_request.json"
 echo ""
 
 echo "Gateway decision:"
-ALLOWED_RESULT=$($GATEWAY_CLI validate < "$DEMO_DIR/demo_inputs/allowed_request.json" || echo '{"allowed":false,"reason":"gateway error"}')
+cd "$REPO_ROOT/gateway"  # Run from gateway dir so policy.yaml is found
+ALLOWED_RESULT=$($GATEWAY_CLI validate < "$DEMO_DIR/demo_inputs/allowed_request.json" || echo '{"decision":"deny","reason":"gateway error"}')
+cd "$REPO_ROOT"
 echo "$ALLOWED_RESULT" | python3 -m json.tool 2>/dev/null || echo "$ALLOWED_RESULT"
 echo "$ALLOWED_RESULT" > "$OUTPUT_DIR/allowed_decision.json"
 
 # Check if allowed
-if echo "$ALLOWED_RESULT" | grep -q '"allowed":true\|"allowed": true'; then
+if echo "$ALLOWED_RESULT" | grep -q '"decision":"allow"\|"decision": "allow"'; then
     echo ""
     echo "✓ Tool call ALLOWED - fs.read is in the policy with 'read' scope"
 else
@@ -73,12 +68,14 @@ cat "$DEMO_DIR/demo_inputs/blocked_request.json"
 echo ""
 
 echo "Gateway decision:"
-DENIED_RESULT=$($GATEWAY_CLI validate < "$DEMO_DIR/demo_inputs/blocked_request.json" || echo '{"allowed":false,"reason":"gateway error"}')
+cd "$REPO_ROOT/gateway"
+DENIED_RESULT=$($GATEWAY_CLI validate < "$DEMO_DIR/demo_inputs/blocked_request.json" || echo '{"decision":"deny","reason":"gateway error"}')
+cd "$REPO_ROOT"
 echo "$DENIED_RESULT" | python3 -m json.tool 2>/dev/null || echo "$DENIED_RESULT"
 echo "$DENIED_RESULT" > "$OUTPUT_DIR/denied_decision.json"
 
 # Check if denied
-if echo "$DENIED_RESULT" | grep -q '"allowed":false\|"allowed": false'; then
+if echo "$DENIED_RESULT" | grep -q '"decision":"deny"\|"decision": "deny"'; then
     echo ""
     echo "✓ Tool call DENIED - shell.exec is NOT in the policy"
     echo "  Reason: $(echo "$DENIED_RESULT" | grep -o '"reason":"[^"]*"' | head -1 || echo 'tool not allowed')"
@@ -95,8 +92,9 @@ cat "$DEMO_DIR/demo_inputs/secret_input.json"
 echo ""
 
 echo "After redaction:"
+cd "$REPO_ROOT/gateway"
 REDACTED=$($GATEWAY_CLI redact < "$DEMO_DIR/demo_inputs/secret_input.json" || echo '{}')
-echo "$REDACTED" | python3 -m json.tool 2>/dev/null || echo "$REDACTED"
+cd "$REPO_ROOT"
 echo "$REDACTED" > "$OUTPUT_DIR/redaction_demo.json"
 echo ""
 echo "✓ Secrets masked with [REDACTED] patterns"

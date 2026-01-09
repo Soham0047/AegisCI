@@ -24,8 +24,8 @@ def _skip_if_gateway_not_built() -> None:
 
 def _get_gateway_cli() -> list[str]:
     """Get the command to run the gateway CLI."""
-    # The CLI is in scripts folder, run via ts-node or npx tsx
-    cli_ts = Path("gateway/scripts/gateway_cli.ts").resolve()
+    # The CLI is in src/scripts folder, run via npx tsx
+    cli_ts = Path("gateway/src/scripts/gateway_cli.ts").resolve()
     if not cli_ts.exists():
         pytest.skip("Gateway CLI script not found")
     # Use npx tsx to run TypeScript directly
@@ -46,12 +46,12 @@ def test_gateway_demo_inputs_valid_json() -> None:
     demo_dir = Path("demo_pack/agent_gateway_demo/demo_inputs")
 
     allowed = json.loads((demo_dir / "allowed_request.json").read_text())
-    assert "request" in allowed
-    assert allowed["request"]["tool"] == "fs.read"
+    assert "tool" in allowed
+    assert allowed["tool"] == "fs.read"
 
     blocked = json.loads((demo_dir / "blocked_request.json").read_text())
-    assert "request" in blocked
-    assert blocked["request"]["tool"] == "shell.exec"
+    assert "tool" in blocked
+    assert blocked["tool"] == "shell.exec"
 
     secrets = json.loads((demo_dir / "secret_input.json").read_text())
     assert "api_key" in secrets

@@ -9,7 +9,7 @@ from guardian.report import build_pr_report
 from guardian.scanners.bandit_scanner import run_bandit
 from guardian.scanners.semgrep_scanner import run_semgrep
 
-app = typer.Typer(help="SecureDev Guardian CLI (baseline)")
+app = typer.Typer(help="SecureDev Guardian CLI (baseline)", no_args_is_help=True)
 
 
 def _filter_files(files: list[str]) -> tuple[list[str], list[str]]:

@@ -1,11 +1,19 @@
+"""SecureDev Guardian API - Production-ready FastAPI application."""
+
 import hashlib
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
+from backend.config import settings
 from backend.dashboard import DashboardService, default_since
 from backend.db import Base, ConfigStore, GatewayEventStore, PatchOutcomeStore, SessionLocal, engine
+from backend.exceptions import register_exception_handlers
+from backend.logging_config import get_logger
+from backend.middleware import register_middleware
 from backend.models import Report
 from backend.schemas import (
     FindingsCount,
@@ -23,18 +31,55 @@ from backend.schemas import (
 )
 from backend.services import get_report_counts_by_id, upsert_report_and_findings
 
-Base.metadata.create_all(bind=engine)
+logger = get_logger(__name__)
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Application lifespan handler for startup/shutdown."""
+    # Startup
+    logger.info(
+        "Starting SecureDev Guardian API",
+        environment=settings.app_env,
+        debug=settings.debug,
+    )
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database initialized")
+    yield
+    # Shutdown
+    logger.info("Shutting down SecureDev Guardian API")
+
+
+# Initialize stores
 gateway_store = GatewayEventStore()
 outcome_store = PatchOutcomeStore()
 dashboard_service = DashboardService()
 config_store = ConfigStore()
 
-app = FastAPI(title="SecureDev Guardian API (baseline)", version="0.1.0")
+# Create FastAPI app with production settings
+app = FastAPI(
+    title="SecureDev Guardian API",
+    description=(
+        "AI-powered Security Analysis Platform with ML vulnerability classification, "
+        "automated patching, and LLM security gateway"
+    ),
+    version="1.0.0",
+    lifespan=lifespan,
+    docs_url="/docs" if settings.debug else None,
+    redoc_url="/redoc" if settings.debug else None,
+    openapi_url="/openapi.json" if settings.debug else None,
+)
+
+# Register exception handlers
+register_exception_handlers(app)
+
+# Register middleware
+register_middleware(app)
 
 # Enable CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,6 +87,7 @@ app.add_middleware(
 
 
 def get_db():
+    """Database session dependency."""
     db = SessionLocal()
     try:
         yield db
@@ -49,12 +95,45 @@ def get_db():
         db.close()
 
 
-@app.get("/health")
+# =============================================================================
+# Health & Status Endpoints
+# =============================================================================
+
+
+@app.get("/health", tags=["Health"])
 def health():
-    return {"ok": True}
+    """Health check endpoint for load balancers and monitoring."""
+    return {"ok": True, "version": "1.0.0", "environment": settings.app_env}
 
 
-@app.post("/api/v1/reports", response_model=ReportOut, status_code=status.HTTP_201_CREATED)
+@app.get("/ready", tags=["Health"])
+def readiness(db: Session = Depends(get_db)):
+    """Readiness check - verifies database connectivity."""
+    from sqlalchemy import text
+
+    try:
+        db.execute(text("SELECT 1"))
+        return {"ready": True, "database": "ok"}
+    except Exception as e:
+        logger.error("Readiness check failed", error=str(e))
+        return Response(
+            content='{"ready": false, "database": "error"}',
+            status_code=503,
+            media_type="application/json",
+        )
+
+
+# =============================================================================
+# Reports Endpoints
+# =============================================================================
+
+
+@app.post(
+    "/api/v1/reports",
+    response_model=ReportOut,
+    status_code=status.HTTP_201_CREATED,
+    tags=["Reports"],
+)
 def create_report(payload: ReportIn, response: Response, db: Session = Depends(get_db)):
     report, created, counts = upsert_report_and_findings(db, payload)
     if not created:
