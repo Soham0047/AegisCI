@@ -1,6 +1,156 @@
 # SecureDev Guardian
 
-An **AI-powered Security Analysis Platform** for Python + JS/TS codebases with ML-based vulnerability classification, automated patch generation, and LLM security gateway.
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+An **AI-powered Security Scanner CLI** for Python + JS/TS codebases with automated vulnerability detection and patching recommendations.
+
+## 🚀 Quick Install
+
+```bash
+# Install from source
+pip install -e .
+
+# Or install with pipx (recommended for CLI tools)
+pipx install .
+
+# Verify installation
+guardian --help
+```
+
+## 📖 CLI Usage
+
+### Basic Scan
+
+```bash
+# Scan changes compared to main branch
+guardian scan --base-ref main
+
+# Scan with a different base branch
+guardian scan --base-ref develop
+```
+
+### Output Formats
+
+```bash
+# Output as JSON (for CI/CD pipelines)
+guardian scan --base-ref main --json
+
+# Generate both markdown and JSON reports
+guardian scan --base-ref main --format both
+
+# Only markdown report
+guardian scan --base-ref main --format md
+```
+
+### CI/CD Integration
+
+```bash
+# Fail if high or critical severity findings exist
+guardian scan --base-ref main --fail-on high
+
+# Fail only on critical findings
+guardian scan --base-ref main --fail-on critical
+
+# Silent mode for scripts
+guardian scan --base-ref main --quiet --fail-on high
+```
+
+### Configuration
+
+```bash
+# Initialize configuration file
+guardian init
+
+# View current configuration
+guardian config --show
+
+# Check that all tools are installed
+guardian check
+```
+
+### All Commands
+
+| Command | Description |
+|---------|-------------|
+| `guardian scan` | Scan codebase for vulnerabilities |
+| `guardian init` | Create `.guardian.yaml` config file |
+| `guardian config` | Show current configuration |
+| `guardian check` | Verify scanner tools are installed |
+| `guardian version` | Show version information |
+
+### Scan Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--base-ref` | `-b` | Base branch to compare against (default: `main`) |
+| `--semgrep-config` | `-s` | Semgrep ruleset (default: `p/ci`) |
+| `--output-dir` | `-o` | Output directory for reports (default: `.`) |
+| `--format` | `-f` | Output format: `md`, `json`, or `both` |
+| `--fail-on` | | Fail with exit code 1 on findings at this severity |
+| `--json` | | Output JSON to stdout |
+| `--verbose` | `-v` | Show detailed output |
+| `--quiet` | `-q` | Suppress output except errors |
+
+## ⚙️ Configuration File
+
+Create a `.guardian.yaml` file in your project root:
+
+```yaml
+# SecureDev Guardian Configuration
+base_ref: main
+semgrep_config: p/ci
+output_dir: "."
+report_format: both
+fail_on_severity: high  # critical, high, medium, low, or null
+verbose: false
+quiet: false
+```
+
+## 🔧 GitHub Actions
+
+```yaml
+name: Security Scan
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Guardian
+        run: pip install securedev-guardian bandit semgrep
+
+      - name: Run Security Scan
+        run: guardian scan --base-ref origin/main --fail-on high --json > report.json
+
+      - name: Upload Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: report.json
+```
+
+## 📊 Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | Success (no findings or below threshold) |
+| 1 | Findings at or above `--fail-on` severity |
+| 2 | Error during scan |
+| 3 | Configuration error |
+
+---
 
 ## Features
 

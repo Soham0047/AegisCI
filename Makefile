@@ -1,7 +1,42 @@
-.PHONY: venv install api web gateway scan lint-py format-py format-py-check typecheck test \
-	test-js-scripts build-dataset lint-js format-js format-check-js lint format check
+# SecureDev Guardian Makefile
+# ============================
+# Quick commands for development and CLI usage
+
+.PHONY: venv install install-dev api web gateway scan scan-ci lint-py format-py format-py-check typecheck test \
+	test-fast test-js-scripts build-dataset lint-js format-js format-check-js lint format check \
+	build publish clean help
 
 BASE ?= main
+
+# Default target - show help
+help:
+	@echo "SecureDev Guardian - Available Commands"
+	@echo "========================================"
+	@echo ""
+	@echo "Setup:"
+	@echo "  make venv             Create virtual environment"
+	@echo "  make install          Install dependencies"
+	@echo "  make install-dev      Install with dev dependencies"
+	@echo ""
+	@echo "Development:"
+	@echo "  make api              Start FastAPI backend"
+	@echo "  make web              Start Next.js frontend"
+	@echo "  make gateway          Start Express gateway"
+	@echo ""
+	@echo "Testing:"
+	@echo "  make test             Run all tests"
+	@echo "  make test-fast        Run tests without slow tests"
+	@echo "  make check            Full check (lint + typecheck + test)"
+	@echo ""
+	@echo "CLI:"
+	@echo "  make scan             Run security scan"
+	@echo "  make scan-ci          Run scan with CI settings"
+	@echo "  make guardian-check   Verify CLI installation"
+	@echo ""
+	@echo "Build:"
+	@echo "  make build            Build distribution packages"
+	@echo "  make publish          Publish to PyPI"
+	@echo "  make clean            Clean build artifacts"
 
 venv:
 	@echo "Creating virtual environment in .venv..."
@@ -15,6 +50,11 @@ install:
 	@echo "Installing Python dev dependencies..."
 	python -m pip install -U pip
 	python -m pip install -e ".[dev]"
+	@echo "✓ Guardian installed. Run 'guardian --help' to get started."
+
+install-dev: install
+	pre-commit install
+	@echo "✓ Development environment ready."
 
 api:
 	@echo "Starting FastAPI backend (reload enabled)..."
@@ -30,7 +70,19 @@ gateway:
 
 scan:
 	@echo "Running guardian scan against base ref: $(BASE)"
-	guardian --base-ref $(BASE)
+	guardian scan --base-ref $(BASE)
+
+scan-ci:
+	@echo "Running guardian scan with CI settings..."
+	guardian scan --base-ref $(BASE) --fail-on high --json
+
+guardian-check:
+	@echo "Verifying Guardian CLI installation..."
+	guardian check
+
+guardian-init:
+	@echo "Initializing Guardian configuration..."
+	guardian init
 
 lint-py:
 	@echo "Running ruff lint..."
@@ -89,3 +141,40 @@ format:
 check:
 	@echo "Running full check (lint, typecheck, tests)..."
 	@$(MAKE) lint typecheck test
+
+test-fast:
+	@echo "Running fast tests (skipping slow)..."
+	pytest -m "not slow"
+
+# Build & Publish
+build: clean
+	@echo "Building distribution packages..."
+	pip install build
+	python -m build
+	@echo "✓ Built packages in dist/"
+
+publish: build
+	@echo "Publishing to PyPI..."
+	pip install twine
+	twine upload dist/*
+
+clean:
+	@echo "Cleaning build artifacts..."
+	rm -rf build/ dist/ *.egg-info
+	rm -rf .pytest_cache .mypy_cache .ruff_cache
+	rm -rf htmlcov/ .coverage
+	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	@echo "✓ Cleaned."
+
+# Docker shortcuts
+docker-build:
+	docker-compose build
+
+docker-up:
+	docker-compose up -d
+
+docker-down:
+	docker-compose down
+
+docker-logs:
+	docker-compose logs -f
