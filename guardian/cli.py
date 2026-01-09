@@ -5,10 +5,17 @@ SecureDev Guardian CLI
 AI-powered security scanner with automated patching capabilities.
 Scans your code for vulnerabilities and provides actionable fix recommendations.
 
+Scanners:
+- Bandit: Python security analysis (ALL 60+ rules)
+- Semgrep: Multi-language patterns (OWASP, secrets, etc.)
+- Secrets: Hardcoded credentials and API keys (50+ patterns)
+- Patterns: Dangerous code patterns (eval, exec, etc.)
+- Dependencies: Known vulnerable packages (CVE database)
+
 Usage:
     guardian scan --base-ref main
+    guardian scan --base-ref main --comprehensive
     guardian scan --base-ref main --fail-on high
-    guardian report --input report.json --format html
     guardian init
     guardian version
 
@@ -32,7 +39,10 @@ from guardian.config import Config
 from guardian.git_utils import get_changed_files
 from guardian.report import build_pr_report
 from guardian.scanners.bandit_scanner import run_bandit
-from guardian.scanners.semgrep_scanner import run_semgrep
+from guardian.scanners.dependency_scanner import run_dependency_scanner
+from guardian.scanners.pattern_scanner import run_comprehensive_scan
+from guardian.scanners.secrets_scanner import run_secrets_scanner
+from guardian.scanners.semgrep_scanner import run_semgrep, run_semgrep_comprehensive
 from guardian.version import (
     EXIT_CONFIG_ERROR,
     EXIT_ERROR,
@@ -101,7 +111,12 @@ def _should_fail(severity_counts: dict[str, int], fail_on: str | None) -> bool:
     return False
 
 
-def _print_summary_table(py_count: int, js_count: int, findings: list[dict]) -> None:
+def _print_summary_table(
+    py_count: int,
+    js_count: int,
+    findings: list[dict],
+    scanner_stats: dict | None = None,
+) -> None:
     """Print a summary table of scan results."""
     severity_counts = _count_by_severity(findings)
     total = len(findings)
@@ -114,6 +129,18 @@ def _print_summary_table(py_count: int, js_count: int, findings: list[dict]) -> 
     table.add_row("Python files scanned", str(py_count))
     table.add_row("JS/TS files scanned", str(js_count))
     table.add_row("", "")
+
+    # Show scanner breakdown if available
+    if scanner_stats:
+        table.add_row("[bold]By Scanner[/bold]", "")
+        for scanner, stats in scanner_stats.items():
+            if stats.get("enabled", True):
+                count = stats.get("findings", 0)
+                if count > 0:
+                    table.add_row(f"  {scanner.capitalize()}", str(count))
+
+        table.add_row("", "")
+
     table.add_row("[bold]Total findings[/bold]", f"[bold]{total}[/bold]")
 
     for level in SEVERITY_LEVELS:
@@ -200,6 +227,35 @@ def scan(
             help="Path to ML results JSON for hybrid analysis",
         ),
     ] = None,
+    comprehensive: Annotated[
+        bool,
+        typer.Option(
+            "--comprehensive",
+            "-c",
+            help="Run ALL scanners: Bandit, Semgrep (all rules), Secrets, Patterns, Dependencies",
+        ),
+    ] = False,
+    scan_secrets: Annotated[
+        bool,
+        typer.Option(
+            "--secrets",
+            help="Enable secrets scanning (API keys, tokens, credentials)",
+        ),
+    ] = False,
+    scan_patterns: Annotated[
+        bool,
+        typer.Option(
+            "--patterns",
+            help="Enable dangerous code pattern detection",
+        ),
+    ] = False,
+    scan_deps: Annotated[
+        bool,
+        typer.Option(
+            "--deps",
+            help="Enable dependency vulnerability scanning",
+        ),
+    ] = False,
     verbose: Annotated[
         bool,
         typer.Option(
@@ -237,16 +293,24 @@ def scan(
     """
     Scan your codebase for security vulnerabilities.
 
-    Analyzes changed files compared to the base branch using Bandit (Python)
-    and Semgrep (JavaScript/TypeScript) scanners.
+    Analyzes changed files using multiple scanners:
 
-    Examples:
+    [bold]Scanners:[/bold]
+    • Bandit: Python security (60+ rules)
+    • Semgrep: Multi-language patterns (OWASP, security-audit)
+    • Secrets: API keys, tokens, credentials (50+ patterns)
+    • Patterns: Dangerous code patterns (eval, exec, pickle)
+    • Dependencies: Known vulnerable packages (CVE database)
+
+    [bold]Examples:[/bold]
 
         guardian scan --base-ref main
 
-        guardian scan -b develop --fail-on high
+        guardian scan --comprehensive  # All scanners
 
-        guardian scan --json > results.json
+        guardian scan --secrets --deps  # Secrets + Dependencies
+
+        guardian scan --fail-on high --json
     """
     try:
         # Load config
@@ -255,6 +319,13 @@ def scan(
         # Apply defaults from config if not specified
         if base_ref == "main" and cfg.get("base_ref"):
             base_ref = cfg.get("base_ref")
+
+        # Comprehensive mode enables all scanners
+        if comprehensive:
+            scan_secrets = True
+            scan_patterns = True
+            scan_deps = True
+            semgrep_config = "comprehensive"  # Will use multiple rulesets
 
         output_path = Path(output_dir)
         output_path.mkdir(parents=True, exist_ok=True)
@@ -277,13 +348,24 @@ def scan(
             changed = get_changed_files(base_ref)
 
         py_files, js_ts_files = _filter_files(changed)
+        all_code_files = py_files + js_ts_files
+
+        # Build scanner list for display
+        scanners_enabled = ["Bandit", "Semgrep"]
+        if scan_secrets:
+            scanners_enabled.append("Secrets")
+        if scan_patterns:
+            scanners_enabled.append("Patterns")
+        if scan_deps:
+            scanners_enabled.append("Dependencies")
 
         if not quiet and not json_output:
             console.print(
                 Panel(
                     f"[bold]Files to scan:[/bold] {len(changed)} "
                     f"([cyan]Python: {len(py_files)}[/cyan], "
-                    f"[yellow]JS/TS: {len(js_ts_files)}[/yellow])",
+                    f"[yellow]JS/TS: {len(js_ts_files)}[/yellow])\n"
+                    f"[bold]Scanners:[/bold] {', '.join(scanners_enabled)}",
                     title="SecureDev Guardian",
                     border_style="blue",
                 )
@@ -296,7 +378,14 @@ def scan(
             if len(changed) > 20:
                 console.print(f"  ... and {len(changed) - 20} more")
 
-        # Run scanners
+        # Initialize scanner results
+        bandit_json: dict = {"results": [], "errors": []}
+        semgrep_json: dict = {"results": [], "errors": []}
+        secrets_json: dict = {"results": [], "errors": []}
+        patterns_json: dict = {"results": [], "errors": []}
+        deps_json: dict = {"results": [], "errors": []}
+
+        # Run scanners with progress
         if not quiet and not json_output:
             with Progress(
                 SpinnerColumn(),
@@ -308,10 +397,35 @@ def scan(
                 bandit_json = run_bandit(py_files)
 
                 progress.update(task, description="Running Semgrep scanner...")
-                semgrep_json = run_semgrep(js_ts_files, config=semgrep_config)
+                if semgrep_config == "comprehensive":
+                    semgrep_json = run_semgrep_comprehensive(all_code_files)
+                else:
+                    semgrep_json = run_semgrep(js_ts_files, config=semgrep_config)
+
+                if scan_secrets:
+                    progress.update(task, description="Scanning for secrets...")
+                    secrets_json = run_secrets_scanner(all_code_files)
+
+                if scan_patterns:
+                    progress.update(task, description="Detecting dangerous patterns...")
+                    patterns_json = run_comprehensive_scan(all_code_files)
+
+                if scan_deps:
+                    progress.update(task, description="Checking dependencies...")
+                    deps_json = run_dependency_scanner(directory=".")
         else:
             bandit_json = run_bandit(py_files)
-            semgrep_json = run_semgrep(js_ts_files, config=semgrep_config)
+            if semgrep_config == "comprehensive":
+                semgrep_json = run_semgrep_comprehensive(all_code_files)
+            else:
+                semgrep_json = run_semgrep(js_ts_files, config=semgrep_config)
+
+            if scan_secrets:
+                secrets_json = run_secrets_scanner(all_code_files)
+            if scan_patterns:
+                patterns_json = run_comprehensive_scan(all_code_files)
+            if scan_deps:
+                deps_json = run_dependency_scanner(directory=".")
 
         # Build report
         report_md, report_json = build_pr_report(
@@ -323,7 +437,80 @@ def scan(
             ml_results=ml_results,
         )
 
-        findings = report_json.get("findings", [])
+        # Add additional scanner results to findings
+        additional_findings = []
+
+        # Process secrets findings
+        for result in secrets_json.get("results", []):
+            additional_findings.append({
+                "severity": result.get("extra", {}).get("severity", "high").lower(),
+                "rule": {
+                    "rule_id": result.get("check_id", "secrets"),
+                    "name": result.get("check_name", "Secret detected"),
+                },
+                "location": {
+                    "filepath": result.get("path", ""),
+                    "start_line": result.get("start", {}).get("line", 0),
+                },
+            })
+
+        # Process pattern findings
+        for result in patterns_json.get("results", []):
+            additional_findings.append({
+                "severity": result.get("extra", {}).get("severity", "medium").lower(),
+                "rule": {
+                    "rule_id": result.get("check_id", "pattern"),
+                    "name": result.get("check_name", "Dangerous pattern"),
+                },
+                "location": {
+                    "filepath": result.get("path", ""),
+                    "start_line": result.get("start", {}).get("line", 0),
+                },
+            })
+
+        # Process dependency findings
+        for result in deps_json.get("results", []):
+            additional_findings.append({
+                "severity": result.get("extra", {}).get("severity", "high").lower(),
+                "rule": {
+                    "rule_id": result.get("check_id", "dependency"),
+                    "name": result.get("check_name", "Vulnerable dependency"),
+                },
+                "location": {
+                    "filepath": result.get("path", ""),
+                    "start_line": result.get("start", {}).get("line", 0),
+                },
+            })
+
+        # Combine findings
+        all_findings = report_json.get("findings", []) + additional_findings
+
+        # Update report_json with all findings
+        report_json["findings"] = all_findings
+        report_json["scanners"] = {
+            "bandit": {
+                "findings": len(bandit_json.get("results", [])),
+                "errors": bandit_json.get("errors", []),
+            },
+            "semgrep": {
+                "findings": len(semgrep_json.get("results", [])),
+                "errors": semgrep_json.get("errors", []),
+            },
+            "secrets": {
+                "findings": len(secrets_json.get("results", [])),
+                "enabled": scan_secrets,
+            },
+            "patterns": {
+                "findings": len(patterns_json.get("results", [])),
+                "enabled": scan_patterns,
+            },
+            "dependencies": {
+                "findings": len(deps_json.get("results", [])),
+                "enabled": scan_deps,
+            },
+        }
+
+        findings = all_findings
 
         # JSON output mode
         if json_output:
@@ -354,7 +541,12 @@ def scan(
         # Print summary
         if not quiet:
             console.print()
-            _print_summary_table(len(py_files), len(js_ts_files), findings)
+            _print_summary_table(
+                len(py_files),
+                len(js_ts_files),
+                findings,
+                scanner_stats=report_json.get("scanners"),
+            )
 
             if findings and verbose:
                 _print_findings(findings)

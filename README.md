@@ -56,6 +56,19 @@ guardian scan --base-ref main --fail-on critical
 guardian scan --base-ref main --quiet --fail-on high
 ```
 
+### Comprehensive Scanning
+
+```bash
+# Run ALL scanners for maximum coverage
+guardian scan --comprehensive
+
+# Enable specific additional scanners
+guardian scan --secrets              # Detect hardcoded secrets
+guardian scan --patterns             # Dangerous code patterns
+guardian scan --deps                 # Vulnerable dependencies
+guardian scan --secrets --deps       # Combine multiple scanners
+```
+
 ### Configuration
 
 ```bash
@@ -85,12 +98,56 @@ guardian check
 |--------|-------|-------------|
 | `--base-ref` | `-b` | Base branch to compare against (default: `main`) |
 | `--semgrep-config` | `-s` | Semgrep ruleset (default: `p/ci`) |
+| `--comprehensive` | `-c` | Run ALL scanners for maximum coverage |
+| `--secrets` | | Enable secrets scanning (API keys, tokens) |
+| `--patterns` | | Enable dangerous code pattern detection |
+| `--deps` | | Enable dependency vulnerability scanning |
 | `--output-dir` | `-o` | Output directory for reports (default: `.`) |
 | `--format` | `-f` | Output format: `md`, `json`, or `both` |
 | `--fail-on` | | Fail with exit code 1 on findings at this severity |
 | `--json` | | Output JSON to stdout |
 | `--verbose` | `-v` | Show detailed output |
 | `--quiet` | `-q` | Suppress output except errors |
+
+## 🛡️ Security Scanners
+
+### Bandit (Python)
+Detects 60+ security issues including:
+- Injection vulnerabilities (SQL, command, code)
+- Hardcoded passwords and secrets
+- Insecure cryptographic functions
+- Dangerous deserialization
+- SSL/TLS misconfigurations
+
+### Semgrep (Multi-language)
+Runs multiple security rulesets:
+- `p/security-audit` - Comprehensive security audit
+- `p/owasp-top-ten` - OWASP Top 10 vulnerabilities
+- `p/secrets` - Hardcoded secrets detection
+- `p/python`, `p/javascript`, `p/typescript` - Language-specific rules
+
+### Secrets Scanner
+Detects 50+ secret patterns:
+- AWS, GCP, Azure credentials
+- GitHub, GitLab, Slack tokens
+- OpenAI, Anthropic API keys
+- Database connection strings
+- Private keys (RSA, DSA, EC)
+- JWTs and Bearer tokens
+
+### Pattern Scanner
+Detects dangerous code patterns:
+- `eval()`, `exec()`, `pickle.load()`
+- `shell=True` in subprocess
+- `innerHTML`, `document.write()`
+- Insecure hash functions (MD5, SHA1)
+- SQL string formatting
+
+### Dependency Scanner
+Checks for vulnerable packages:
+- Python: requirements.txt, pyproject.toml
+- JavaScript: package.json
+- Known CVEs from vulnerability databases
 
 ## ⚙️ Configuration File
 
