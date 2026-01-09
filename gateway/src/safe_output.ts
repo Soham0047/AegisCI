@@ -10,8 +10,7 @@ export function classifyOutput(
   const { sanitized, findings } = redactObject(output);
   const text = typeof sanitized === "string" ? sanitized : JSON.stringify(sanitized);
   const containsCode = /```/.test(text);
-  const blocked =
-    !allowCode && (containsBlocked(text, blocklistPatterns) || containsCode);
+  const blocked = !allowCode && (containsBlocked(text, blocklistPatterns) || containsCode);
 
   const tags = {
     trusted: origin === "tool" && !blocked,

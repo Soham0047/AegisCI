@@ -7,8 +7,7 @@ export default function Page() {
       <div className="card">
         <h3>Reports</h3>
         <p>
-          Review scan findings across repos with filters for repo, commit, severity, and
-          timeframe.
+          Review scan findings across repos with filters for repo, commit, severity, and timeframe.
         </p>
         <Link className="button" href="/reports">
           Open reports
@@ -17,8 +16,7 @@ export default function Page() {
       <div className="card">
         <h3>Patches</h3>
         <p>
-          Track patch attempts, validation outcomes, and the final diff selected by Patch
-          Copilot.
+          Track patch attempts, validation outcomes, and the final diff selected by Patch Copilot.
         </p>
         <Link className="button secondary" href="/patches">
           Inspect patches

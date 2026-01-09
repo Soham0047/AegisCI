@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
+from rag.dl.reranker import score_pairs
 from rag.embeddings import embed_text, tokenize
 from rag.store.sqlite_store import ChunkHit, SQLiteStore
 
@@ -34,9 +33,12 @@ class RAGRetriever:
 
     def _rerank(self, query: str, hits: list[ChunkHit]) -> list[RetrievalHit]:
         query_tokens = tokenize(query)
+        learned_scores = score_pairs(query, [hit.text for hit in hits])
         reranked: list[RetrievalHit] = []
-        for hit in hits:
+        for idx, hit in enumerate(hits):
             score = _lexical_score(query_tokens, tokenize(hit.text))
+            if learned_scores is not None:
+                score = learned_scores[idx]
             title = hit.metadata.get("title") or Path(hit.metadata.get("source_path", "")).name
             source_path = hit.metadata.get("source_path", "")
             snippet = _snippet(hit.text)

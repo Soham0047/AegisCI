@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import json
 import sqlite3
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from rag.embeddings import cosine_similarity
 
@@ -122,6 +123,24 @@ class SQLiteStore:
             )
         hits.sort(key=lambda h: h.score, reverse=True)
         return hits[:top_k]
+
+    def list_chunks(self) -> list[Chunk]:
+        cur = self.conn.cursor()
+        cur.execute("SELECT id, document_id, chunk_index, text, metadata, embedding FROM chunks")
+        chunks: list[Chunk] = []
+        for row in cur.fetchall():
+            chunk_id, document_id, chunk_index, text, metadata_json, emb_json = row
+            chunks.append(
+                Chunk(
+                    chunk_id=chunk_id,
+                    document_id=document_id,
+                    chunk_index=int(chunk_index),
+                    text=text,
+                    metadata=json.loads(metadata_json),
+                    embedding=json.loads(emb_json),
+                )
+            )
+        return chunks
 
     def close(self) -> None:
         self.conn.close()

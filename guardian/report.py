@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import subprocess
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -260,7 +260,7 @@ def build_pr_report(
             ml_findings.append(finding)
 
     findings = merge_findings(tool_findings, ml_findings)
-    generated_at = datetime.now(timezone.utc).isoformat()
+    generated_at = datetime.now(UTC).isoformat()
     severity_counts, source_counts = _summarize_counts(findings)
     meta = {
         "base_ref": base_ref,

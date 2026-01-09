@@ -14,6 +14,14 @@ def _skip_if_no_docker() -> None:
         pytest.skip("RUN_DOCKER_TESTS not set")
     if shutil.which("docker") is None:
         pytest.skip("docker not available")
+    try:
+        result = subprocess.run(
+            ["docker", "info"], capture_output=True, text=True, timeout=5, check=False
+        )
+    except Exception:
+        pytest.skip("docker not accessible")
+    if result.returncode != 0:
+        pytest.skip("docker not accessible")
 
 
 def _init_repo(repo: Path) -> str:

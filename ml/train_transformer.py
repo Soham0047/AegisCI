@@ -6,12 +6,12 @@
 from __future__ import annotations
 
 import argparse
-import sys
 import json
 import math
 import os
 import random
 import subprocess
+import sys
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
@@ -197,7 +197,7 @@ def _compute_metrics(
     categories: list[str],
 ) -> dict[str, Any]:
     try:
-        from sklearn.metrics import precision_recall_fscore_support, roc_auc_score, accuracy_score
+        from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score
     except ImportError:  # pragma: no cover - fallback for minimal envs
         precision_recall_fscore_support = None
         roc_auc_score = None

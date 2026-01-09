@@ -4,10 +4,7 @@ import { loadPolicy } from "./policy";
 import { redactObject } from "./redact";
 import type { ArgConstraints, Policy, ToolCallRequest, ToolDecision, ToolPolicy } from "./types";
 
-export function validateToolCall(
-  request: ToolCallRequest,
-  policy?: Policy,
-): ToolDecision {
+export function validateToolCall(request: ToolCallRequest, policy?: Policy): ToolDecision {
   const activePolicy = policy ?? loadPolicy();
   const tool = activePolicy.tools.find((item) => item.name === request.tool);
   if (!tool || tool.allowed !== true) {

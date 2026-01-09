@@ -135,3 +135,19 @@ class RepoConfigOut(BaseModel):
     settings: dict[str, Any]
     created_at: str | None = None
     updated_at: str | None = None
+
+
+class PatchOutcomeIn(BaseModel):
+    job_id: str
+    finding_id: str
+    candidate_id: str
+    action: Literal["accepted", "rejected", "modified"]
+    notes: str | None = None
+    user: str | None = None
+
+
+class PatchOutcomeOut(PatchOutcomeIn):
+    id: str
+    diff_hash: str
+    timestamp: str
+    repo: str | None = None

@@ -1,9 +1,11 @@
+import hashlib
+
 from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
 from backend.dashboard import DashboardService, default_since
-from backend.db import Base, ConfigStore, GatewayEventStore, SessionLocal, engine
+from backend.db import Base, ConfigStore, GatewayEventStore, PatchOutcomeStore, SessionLocal, engine
 from backend.models import Report
 from backend.schemas import (
     FindingsCount,
@@ -11,6 +13,8 @@ from backend.schemas import (
     GatewayEventOut,
     OrgConfigIn,
     OrgConfigOut,
+    PatchOutcomeIn,
+    PatchOutcomeOut,
     RepoConfigIn,
     RepoConfigOut,
     ReportIn,
@@ -21,6 +25,7 @@ from backend.services import get_report_counts_by_id, upsert_report_and_findings
 
 Base.metadata.create_all(bind=engine)
 gateway_store = GatewayEventStore()
+outcome_store = PatchOutcomeStore()
 dashboard_service = DashboardService()
 config_store = ConfigStore()
 
@@ -100,6 +105,44 @@ def create_gateway_event(payload: GatewayEventIn):
     event_id = gateway_store.create_event(payload.model_dump())
     stored = gateway_store.get_event(event_id)
     return GatewayEventOut(**stored)
+
+
+@app.post("/api/v1/outcomes", response_model=PatchOutcomeOut)
+def create_patch_outcome(payload: PatchOutcomeIn):
+    job = dashboard_service.job_store.get_job(payload.job_id)
+    repo = job.get("metadata", {}).get("repo") if job else None
+    diff_path = dashboard_service.artifacts_root / payload.job_id / "final.diff"
+    diff_text = diff_path.read_text(encoding="utf-8") if diff_path.exists() else ""
+    diff_hash = hashlib.sha256(diff_text.encode("utf-8")).hexdigest()
+    record = outcome_store.create_outcome(
+        {
+            **payload.model_dump(),
+            "repo": repo,
+            "diff_hash": diff_hash,
+        }
+    )
+    stored = outcome_store.list_outcomes(job_id=payload.job_id, limit=1)
+    if stored:
+        return PatchOutcomeOut(**stored[0])
+    return PatchOutcomeOut(**record)
+
+
+@app.get("/api/v1/outcomes", response_model=list[PatchOutcomeOut])
+def list_patch_outcomes(
+    repo: str | None = None,
+    from_ts: str | None = Query(None, alias="from"),
+    to_ts: str | None = Query(None, alias="to"),
+    limit: int = 200,
+):
+    return [
+        PatchOutcomeOut(**item)
+        for item in outcome_store.list_outcomes(
+            repo=repo,
+            since=from_ts,
+            until=to_ts,
+            limit=min(limit, 500),
+        )
+    ]
 
 
 @app.get("/api/v1/dashboard/reports")

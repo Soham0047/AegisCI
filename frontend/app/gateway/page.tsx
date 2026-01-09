@@ -139,10 +139,13 @@ function GatewayPageContent() {
 
       {error && (
         <div className="error">
-          <strong>Demo mode:</strong> {error}. Ensure the backend is running and
-          reachable.
+          <strong>Demo mode:</strong> {error}. Ensure the backend is running and reachable.
           <div style={{ marginTop: 8 }}>
-            <button className="button secondary" type="button" onClick={() => window.location.reload()}>
+            <button
+              className="button secondary"
+              type="button"
+              onClick={() => window.location.reload()}
+            >
               Retry
             </button>
           </div>

@@ -12,8 +12,9 @@ Normalized finding schema used by patcher:
 """
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from patcher.diff import bundle_diffs, make_unified_diff
 from patcher.templates.python import get_python_templates

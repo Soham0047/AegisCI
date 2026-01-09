@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 import json
-import os
 import subprocess
+import sys
+from collections.abc import Callable
 from dataclasses import dataclass
 from hashlib import sha1
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from patcher import generate_patches
-from patcher.llm_client import PatchGenerationResult, generate_patch, redact_text
+from patcher.llm_client import generate_patch, redact_text
 from patcher.ranker import Candidate, rank_candidates
 from patcher.types import NormalizedFinding
 from rag.indexer import build_index
@@ -87,6 +88,7 @@ def run_orchestrator(
                         diff_ok=True,
                         validated=validation.ok,
                         validation_status=validation.status,
+                        metadata={"validation_report": validation.report_path},
                     )
                 )
             else:
@@ -98,6 +100,7 @@ def run_orchestrator(
                         diff_ok=False,
                         validated=False,
                         validation_status=result.error or "diff invalid",
+                        metadata={},
                     )
                 )
 
@@ -134,6 +137,7 @@ def _deterministic_candidate(
         diff_ok=True,
         validated=validation.ok,
         validation_status=validation.status,
+        metadata={"validation_report": validation.report_path},
     )
 
 
@@ -158,7 +162,7 @@ def _run_validator_subprocess(
     label: str,
 ) -> ValidationResult:
     cmd = [
-        "python",
+        sys.executable,
         "-m",
         "validator.runner",
         "--repo",

@@ -55,16 +55,14 @@ function ReportDetailContent() {
 
   useEffect(() => {
     if (!reportId) return;
-    fetchJson<ReportDetail>(`/api/v1/dashboard/reports/${reportId}${query}`).then(
-      (result) => {
-        setLoading(false);
-        if (!result.ok || !result.data) {
-          setError(result.error || "Failed to load report");
-          return;
-        }
-        setDetail(result.data);
-      },
-    );
+    fetchJson<ReportDetail>(`/api/v1/dashboard/reports/${reportId}${query}`).then((result) => {
+      setLoading(false);
+      if (!result.ok || !result.data) {
+        setError(result.error || "Failed to load report");
+        return;
+      }
+      setDetail(result.data);
+    });
   }, [reportId, query]);
 
   if (loading) {
@@ -76,7 +74,11 @@ function ReportDetailContent() {
       <div className="error">
         {error || "Report not found"}
         <div style={{ marginTop: 8 }}>
-          <button className="button secondary" type="button" onClick={() => window.location.reload()}>
+          <button
+            className="button secondary"
+            type="button"
+            onClick={() => window.location.reload()}
+          >
             Retry
           </button>
         </div>
@@ -137,8 +139,8 @@ function ReportDetailContent() {
                     <span className={`badge ${finding.severity}`}>{finding.source}</span>
                   </div>
                   <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 6 }}>
-                    {finding.category} • lines {finding.start_line}-{finding.end_line} •
-                    confidence {finding.confidence ?? 0}
+                    {finding.category} • lines {finding.start_line}-{finding.end_line} • confidence{" "}
+                    {finding.confidence ?? 0}
                   </div>
                   {finding.message && (
                     <div style={{ marginTop: 8 }}>{truncate(finding.message, 200)}</div>

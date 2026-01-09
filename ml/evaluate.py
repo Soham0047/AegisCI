@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import json
-from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -12,7 +11,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from ml.models.transformer import SimpleVocab, build_model
-from ml.train_transformer import JsonlDataset, Record, _load_jsonl, build_records
+from ml.train_transformer import JsonlDataset, _load_jsonl, build_records
 
 
 def load_model(
@@ -47,7 +46,6 @@ def evaluate_dataset(
     """Evaluate model on a dataset."""
     from sklearn.metrics import (
         accuracy_score,
-        classification_report,
         confusion_matrix,
         f1_score,
         precision_recall_fscore_support,
@@ -147,7 +145,7 @@ def print_metrics(metrics: dict, dataset_name: str) -> None:
 
     # Risk metrics
     risk = metrics.get("risk", {})
-    print(f"\n📊 Risk Classification (TP vs FP)")
+    print("\n📊 Risk Classification (TP vs FP)")
     print(f"   Accuracy:  {risk.get('accuracy', 0):.4f}")
     print(f"   F1 Score:  {risk.get('f1', 0):.4f}")
     if risk.get("auroc") is not None:
@@ -155,18 +153,18 @@ def print_metrics(metrics: dict, dataset_name: str) -> None:
     else:
         print(f"   AUROC:     N/A ({risk.get('note', 'single class')})")
 
-    print(f"\n   Confusion Matrix:")
+    print("\n   Confusion Matrix:")
     print(f"   {'':>15} Pred FP  Pred TP")
     print(f"   {'Actual FP':>15}  {risk.get('tn', 0):>5}    {risk.get('fp', 0):>5}")
     print(f"   {'Actual TP':>15}  {risk.get('fn', 0):>5}    {risk.get('tp', 0):>5}")
 
     # Category metrics
     cat = metrics.get("category", {})
-    print(f"\n📁 Category Classification")
+    print("\n📁 Category Classification")
     print(f"   Macro F1:  {cat.get('macro_f1', 0):.4f}")
     print(f"   Micro F1:  {cat.get('micro_f1', 0):.4f}")
 
-    print(f"\n   Per-Category Performance:")
+    print("\n   Per-Category Performance:")
     print(f"   {'Category':<30} {'Prec':>6} {'Rec':>6} {'F1':>6} {'Support':>8}")
     print(f"   {'-'*58}")
 

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Any
+
+from patcher.dl.patch_ranker_model import score_candidates
 
 
 @dataclass
@@ -11,6 +14,7 @@ class Candidate:
     diff_ok: bool
     validated: bool
     validation_status: str
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -19,20 +23,36 @@ class RankedCandidate:
     lines_changed: int
     files_changed: int
     hunks: int
+    score: float | None = None
 
 
 def rank_candidates(candidates: list[Candidate]) -> tuple[Candidate | None, dict]:
     validated = [c for c in candidates if c.diff_ok and c.validated]
     ranked = [_score_candidate(c) for c in validated]
-    ranked.sort(
-        key=lambda r: (
-            0 if r.candidate.source == "deterministic" else 1,
-            r.lines_changed,
-            r.files_changed,
-            r.hunks,
-            r.candidate.candidate_id,
+    learned_scores = score_candidates(validated)
+    if learned_scores is not None:
+        for item, score in zip(ranked, learned_scores):
+            item.score = score
+        ranked.sort(
+            key=lambda r: (
+                -(r.score or 0.0),
+                0 if r.candidate.source == "deterministic" else 1,
+                r.lines_changed,
+                r.files_changed,
+                r.hunks,
+                r.candidate.candidate_id,
+            )
         )
-    )
+    else:
+        ranked.sort(
+            key=lambda r: (
+                0 if r.candidate.source == "deterministic" else 1,
+                r.lines_changed,
+                r.files_changed,
+                r.hunks,
+                r.candidate.candidate_id,
+            )
+        )
     selected = ranked[0].candidate if ranked else None
     report = {
         "selected": selected.candidate_id if selected else None,
@@ -43,6 +63,7 @@ def rank_candidates(candidates: list[Candidate]) -> tuple[Candidate | None, dict
                 "lines_changed": r.lines_changed,
                 "files_changed": r.files_changed,
                 "hunks": r.hunks,
+                "score": r.score,
                 "validated": r.candidate.validated,
                 "diff_ok": r.candidate.diff_ok,
                 "validation_status": r.candidate.validation_status,

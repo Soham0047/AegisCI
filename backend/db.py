@@ -1,7 +1,7 @@
 import json
 import sqlite3
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from sqlalchemy import create_engine
@@ -296,6 +296,120 @@ class GatewayEventStore:
         return events[:limit]
 
 
+class PatchOutcomeStore:
+    def __init__(self, db_path: str | None = None) -> None:
+        self.path = Path(db_path or settings.outcomes_db_path)
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        self._init_schema()
+
+    def _connect(self) -> sqlite3.Connection:
+        return sqlite3.connect(self.path)
+
+    def _init_schema(self) -> None:
+        with self._connect() as conn:
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS patch_outcomes (
+                    id TEXT PRIMARY KEY,
+                    job_id TEXT,
+                    repo TEXT,
+                    finding_id TEXT,
+                    candidate_id TEXT,
+                    action TEXT,
+                    notes TEXT,
+                    user TEXT,
+                    diff_hash TEXT,
+                    timestamp TEXT
+                )
+                """
+            )
+            columns = {row[1] for row in conn.execute("PRAGMA table_info(patch_outcomes)")}
+            if "repo" not in columns:
+                conn.execute("ALTER TABLE patch_outcomes ADD COLUMN repo TEXT")
+
+    def create_outcome(self, payload: dict) -> dict:
+        outcome_id = payload.get("id") or uuid.uuid4().hex
+        timestamp = payload.get("timestamp") or _utc_now()
+        notes = payload.get("notes")
+        if isinstance(notes, str):
+            notes = _redact_sensitive(notes)
+        record = {
+            "id": outcome_id,
+            "job_id": payload.get("job_id"),
+            "repo": payload.get("repo"),
+            "finding_id": payload.get("finding_id"),
+            "candidate_id": payload.get("candidate_id"),
+            "action": payload.get("action"),
+            "notes": notes,
+            "user": payload.get("user"),
+            "diff_hash": payload.get("diff_hash"),
+            "timestamp": timestamp,
+        }
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO patch_outcomes (
+                    id, job_id, repo, finding_id, candidate_id,
+                    action, notes, user, diff_hash, timestamp
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    record["id"],
+                    record["job_id"],
+                    record["repo"],
+                    record["finding_id"],
+                    record["candidate_id"],
+                    record["action"],
+                    record["notes"],
+                    record["user"],
+                    record["diff_hash"],
+                    record["timestamp"],
+                ),
+            )
+        return record
+
+    def list_outcomes(
+        self,
+        job_id: str | None = None,
+        repo: str | None = None,
+        since: str | None = None,
+        until: str | None = None,
+        limit: int = 200,
+    ) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                """
+                SELECT id, job_id, repo, finding_id, candidate_id,
+                       action, notes, user, diff_hash, timestamp
+                FROM patch_outcomes
+                """
+            ).fetchall()
+        outcomes = []
+        for row in rows:
+            outcome = {
+                "id": row[0],
+                "job_id": row[1],
+                "repo": row[2],
+                "finding_id": row[3],
+                "candidate_id": row[4],
+                "action": row[5],
+                "notes": row[6],
+                "user": row[7],
+                "diff_hash": row[8],
+                "timestamp": row[9],
+            }
+            if job_id and outcome["job_id"] != job_id:
+                continue
+            if repo and outcome.get("repo") != repo:
+                continue
+            if not _within_time(outcome.get("timestamp"), since, until):
+                continue
+            outcomes.append(outcome)
+        outcomes.sort(key=lambda item: _sort_ts(item.get("timestamp")), reverse=True)
+        return outcomes[:limit]
+
+
 class ConfigStore:
     def __init__(self, db_path: str | None = None) -> None:
         self.path = Path(db_path or settings.config_db_path)
@@ -439,7 +553,7 @@ class ConfigStore:
 
 
 def _utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _sort_ts(value: str | None) -> float:
@@ -458,7 +572,7 @@ def _within_time(value: str | None, since: str | None, until: str | None) -> boo
         ts = datetime.fromisoformat(value)
         # Make timezone-aware if naive (assume UTC)
         if ts.tzinfo is None:
-            ts = ts.replace(tzinfo=timezone.utc)
+            ts = ts.replace(tzinfo=UTC)
     except ValueError:
         return True
     if since:
@@ -466,7 +580,7 @@ def _within_time(value: str | None, since: str | None, until: str | None) -> boo
             since_ts = datetime.fromisoformat(since)
             # Make timezone-aware if naive (assume UTC)
             if since_ts.tzinfo is None:
-                since_ts = since_ts.replace(tzinfo=timezone.utc)
+                since_ts = since_ts.replace(tzinfo=UTC)
             if ts < since_ts:
                 return False
         except ValueError:
@@ -476,7 +590,7 @@ def _within_time(value: str | None, since: str | None, until: str | None) -> boo
             until_ts = datetime.fromisoformat(until)
             # Make timezone-aware if naive (assume UTC)
             if until_ts.tzinfo is None:
-                until_ts = until_ts.replace(tzinfo=timezone.utc)
+                until_ts = until_ts.replace(tzinfo=UTC)
             if ts > until_ts:
                 return False
         except ValueError:

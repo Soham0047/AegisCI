@@ -43,7 +43,11 @@ def test_dashboard_patches_list_and_detail(monkeypatch, tmp_path: Path) -> None:
     (job_dir / "patch_summary.json").write_text(json.dumps(summary), encoding="utf-8")
     (job_dir / "final.diff").write_text("--- a/app/main.py\n+++ b/app/main.py\n", encoding="utf-8")
 
-    service = DashboardService(jobs_db_path=str(jobs_db), artifacts_root=artifacts_root)
+    service = DashboardService(
+        jobs_db_path=str(jobs_db),
+        artifacts_root=artifacts_root,
+        outcomes_db_path=str(tmp_path / "outcomes.db"),
+    )
     monkeypatch.setattr(backend_main, "dashboard_service", service)
     client = TestClient(backend_main.app)
 
@@ -52,6 +56,7 @@ def test_dashboard_patches_list_and_detail(monkeypatch, tmp_path: Path) -> None:
     data = resp.json()
     assert data
     assert data[0]["validated_count"] == 1
+    assert "acceptance_rate" in data[0]
 
     detail = client.get(f"/api/v1/dashboard/patches/{job_id}")
     assert detail.status_code == 200

@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from backend.db import GatewayEventStore, JobStore
+from backend.db import GatewayEventStore, JobStore, PatchOutcomeStore
 from guardian.findings import normalize_severity, redact_secrets, severity_rank
 
 
@@ -16,9 +16,11 @@ class DashboardService:
         jobs_db_path: str | None = None,
         artifacts_root: Path | None = None,
         gateway_events_db_path: str | None = None,
+        outcomes_db_path: str | None = None,
     ) -> None:
         self.job_store = JobStore(jobs_db_path)
         self.events_store = GatewayEventStore(gateway_events_db_path)
+        self.outcome_store = PatchOutcomeStore(outcomes_db_path)
         self.artifacts_root = artifacts_root or Path("artifacts/jobs")
 
     def list_reports(
@@ -113,6 +115,9 @@ class DashboardService:
             total = counts.get("total") or 0
             validated = counts.get("validated") or 0
             success_rate = (validated / total) if total else 0.0
+            outcomes = self.outcome_store.list_outcomes(job_id=job["id"], limit=200)
+            accepted = sum(1 for item in outcomes if item.get("action") == "accepted")
+            acceptance_rate = (accepted / len(outcomes)) if outcomes else 0.0
             results.append(
                 {
                     "job_id": job["id"],
@@ -123,6 +128,7 @@ class DashboardService:
                     "rejected_count": counts.get("rejected") or 0,
                     "avg_validation_time": counts.get("avg_validation_time"),
                     "success_rate": round(success_rate, 3),
+                    "acceptance_rate": round(acceptance_rate, 3),
                     "created_at": job.get("started_at") or job.get("finished_at"),
                 }
             )
@@ -136,6 +142,7 @@ class DashboardService:
         summary = self._load_patch_summary(job_id)
         if not summary:
             return None
+        outcomes = self.outcome_store.list_outcomes(job_id=job_id, limit=200)
         diff = self._load_diff(job_id)
         return {
             "job_id": job_id,
@@ -146,6 +153,7 @@ class DashboardService:
             "findings": summary.get("findings", []),
             "diff": diff,
             "run_id": summary.get("run_id"),
+            "outcomes": outcomes,
         }
 
     def list_gateway_events(
@@ -295,7 +303,7 @@ class DashboardService:
 
 
 def default_since(days: int = 7) -> str:
-    return (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+    return (datetime.now(UTC) - timedelta(days=days)).isoformat()
 
 
 def _sort_ts(value: str | None) -> float:

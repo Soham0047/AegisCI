@@ -16,6 +16,7 @@ type PatchRow = {
   rejected_count: number;
   avg_validation_time: number | null;
   success_rate: number;
+  acceptance_rate: number;
   created_at: string;
 };
 
@@ -95,10 +96,13 @@ function PatchesPageContent() {
 
       {error && (
         <div className="error">
-          <strong>Demo mode:</strong> {error}. Ensure the backend is running and
-          reachable.
+          <strong>Demo mode:</strong> {error}. Ensure the backend is running and reachable.
           <div style={{ marginTop: 8 }}>
-            <button className="button secondary" type="button" onClick={() => window.location.reload()}>
+            <button
+              className="button secondary"
+              type="button"
+              onClick={() => window.location.reload()}
+            >
               Retry
             </button>
           </div>
@@ -121,6 +125,7 @@ function PatchesPageContent() {
                 <th>Validated</th>
                 <th>Rejected</th>
                 <th>Success</th>
+                <th>Acceptance</th>
                 <th>Avg time</th>
                 <th>Created</th>
               </tr>
@@ -137,6 +142,7 @@ function PatchesPageContent() {
                   <td>{row.validated_count}</td>
                   <td>{row.rejected_count}</td>
                   <td>{formatPercent(row.success_rate)}</td>
+                  <td>{formatPercent(row.acceptance_rate)}</td>
                   <td>
                     {row.avg_validation_time ? `${row.avg_validation_time.toFixed(1)}s` : "n/a"}
                   </td>

@@ -170,6 +170,7 @@ def validate_patches(payload: dict[str, Any]) -> dict[str, Any]:
         findings_status.append(
             {
                 "finding_id": finding_id,
+                "candidate_id": selected,
                 "rule_id": _safe_rule_id(payload, finding_id),
                 "filepath": _safe_filepath(payload, finding_id),
                 "start_line": _safe_start_line(payload, finding_id),

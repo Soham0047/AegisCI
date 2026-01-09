@@ -77,3 +77,57 @@ test("gateway page renders events and summary", async ({ page }) => {
   await expect(page.getByRole("cell", { name: "fs.read" })).toBeVisible();
   await expect(page.getByText("fs.read (1)")).toBeVisible();
 });
+
+test("patch detail can submit outcome", async ({ page }) => {
+  await page.route("**/api/v1/dashboard/patches/job-1**", async (route) => {
+    await route.fulfill({
+      json: {
+        job_id: "job-1",
+        repo: "org/repo",
+        commit: "abc123",
+        status: "completed",
+        summary: {
+          total: 1,
+          validated: 1,
+          rejected: 0,
+          patched: 1,
+          avg_validation_time: 1.2,
+        },
+        findings: [
+          {
+            finding_id: "f-1",
+            rule_id: "B602",
+            filepath: "app.py",
+            start_line: 1,
+            end_line: 1,
+            status: "validated",
+            reason: null,
+            source: "deterministic",
+            candidate_id: "det-0",
+          },
+        ],
+        diff: "--- a/app.py\\n+++ b/app.py\\n",
+        run_id: "run-1",
+        outcomes: [],
+      },
+    });
+  });
+  await page.route("**/api/v1/outcomes", async (route) => {
+    await route.fulfill({
+      json: {
+        id: "out-1",
+        job_id: "job-1",
+        finding_id: "f-1",
+        candidate_id: "det-0",
+        action: "accepted",
+        notes: null,
+        diff_hash: "abc",
+        timestamp: new Date().toISOString(),
+      },
+    });
+  });
+
+  await page.goto("/patches/job-1");
+  await page.getByRole("button", { name: "accepted" }).first().click();
+  await expect(page.getByText("Saved accepted for f-1")).toBeVisible();
+});

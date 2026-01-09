@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import ast
 import hashlib
+from collections.abc import Iterable
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from rag.embeddings import embed_text
 from rag.store.sqlite_store import Chunk, SQLiteStore
@@ -38,7 +39,7 @@ def _index_path(
     text = path.read_text(encoding="utf-8", errors="ignore")
     title = path.name
     document_id = hashlib.sha1(path.as_posix().encode("utf-8")).hexdigest()[:12]
-    created_at = datetime.now(timezone.utc).isoformat()
+    created_at = datetime.now(UTC).isoformat()
     store.upsert_document(
         document_id=document_id,
         title=title,

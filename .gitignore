@@ -29,6 +29,7 @@ artifacts/jobs/
 artifacts/patch_v1/
 artifacts/gateway_events/
 artifacts/validation/
+artifacts/dl/
 artifacts/*.json
 artifacts/*.log
 

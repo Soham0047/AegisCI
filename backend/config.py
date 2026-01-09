@@ -6,6 +6,7 @@ class Settings(BaseModel):
     jobs_db_path: str = "backend/data/jobs.db"
     gateway_events_db_path: str = "backend/data/gateway_events.db"
     config_db_path: str = "backend/data/config.db"
+    outcomes_db_path: str = "backend/data/outcomes.db"
 
 
 settings = Settings()

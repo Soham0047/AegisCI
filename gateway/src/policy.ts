@@ -5,8 +5,7 @@ import yaml from "js-yaml";
 import type { Policy, ToolPolicy } from "./types";
 
 export function loadPolicy(policyPath?: string): Policy {
-  const resolved =
-    policyPath ?? process.env.GATEWAY_POLICY_PATH ?? path.resolve("policy.yaml");
+  const resolved = policyPath ?? process.env.GATEWAY_POLICY_PATH ?? path.resolve("policy.yaml");
   const raw = fs.readFileSync(resolved, "utf8");
   const policy = (yaml.load(raw) as Policy) ?? { version: 1, tools: [] };
   const errors = validatePolicy(policy);
