@@ -208,21 +208,117 @@ def _extract_snippet(path: Path, start_line: int, end_line: int, context: int) -
 
 
 def _retrieve_citations(retriever: RAGRetriever, finding: NormalizedFinding) -> list[str]:
-    query = f"{finding.category} {finding.rule_id} {finding.filepath}"
-    hits = retriever.retrieve(query, top_k=5)
-    citations = []
-    for idx, hit in enumerate(hits, start=1):
-        citations.append(f"[CIT-{idx}] {hit.title} ({hit.source_path}) — {hit.snippet}")
-    return citations
+    """Retrieve relevant security knowledge for a finding."""
+    citations: list[str] = []
+
+    # 1. Try to get fix patterns first (most actionable)
+    language = _detect_language(finding.filepath)
+    fix_hits = retriever.retrieve_fix_pattern(
+        category=finding.category or finding.rule_id,
+        language=language,
+        top_k=2,
+    )
+    for idx, hit in enumerate(fix_hits, start=1):
+        citations.append(f"[FIX-{idx}] {hit.title} — {hit.snippet}")
+
+    # 2. Get rule-specific documentation
+    if finding.rule_id:
+        rule_hits = retriever.retrieve_by_rule(finding.rule_id, top_k=2)
+        for idx, hit in enumerate(rule_hits, start=1):
+            # Avoid duplicates
+            if not any(hit.chunk_id in c for c in citations):
+                citations.append(f"[RULE-{idx}] {hit.title} — {hit.snippet}")
+
+    # 3. General context query as fallback
+    if len(citations) < 3:
+        query = f"{finding.category} {finding.rule_id} {language} security fix"
+        general_hits = retriever.retrieve(query, top_k=3)
+        for idx, hit in enumerate(general_hits, start=1):
+            if len(citations) >= 5:
+                break
+            # Avoid duplicates
+            if not any(hit.chunk_id in c for c in citations):
+                citations.append(f"[CIT-{idx}] {hit.title} ({hit.source_path}) — {hit.snippet}")
+
+    return citations[:5]  # Limit to 5 citations
+
+
+def _detect_language(filepath: str) -> str:
+    """Detect programming language from file path."""
+    ext_map = {
+        ".py": "Python",
+        ".js": "JavaScript",
+        ".ts": "TypeScript",
+        ".jsx": "JavaScript",
+        ".tsx": "TypeScript",
+        ".java": "Java",
+        ".go": "Go",
+        ".rb": "Ruby",
+        ".php": "PHP",
+        ".cs": "C#",
+        ".cpp": "C++",
+        ".c": "C",
+        ".rs": "Rust",
+    }
+    from pathlib import Path as P
+
+    suffix = P(filepath).suffix.lower()
+    return ext_map.get(suffix, "unknown")
 
 
 def _build_prompt_text(context: dict[str, Any], citations: list[str]) -> str:
-    return (
-        "Return ONLY a unified diff. No prose. No commands. Minimal localized edits.\n"
-        f"Finding: {json.dumps(context.get('finding'))}\n"
-        f"Snippet:\n{context.get('snippet')}\n"
-        "Citations:\n" + "\n".join(citations)
+    """Build the prompt for patch generation with rich context."""
+    finding = context.get("finding", {})
+    snippet = context.get("snippet", "")
+
+    # Build structured prompt
+    prompt_parts = [
+        "You are a security expert. Generate a minimal, targeted fix for this vulnerability.",
+        "",
+        "## Vulnerability Details",
+        f"- Rule: {finding.get('rule_id', 'unknown')}",
+        f"- Category: {finding.get('category', 'unknown')}",
+        f"- File: {finding.get('filepath', 'unknown')}",
+        f"- Line: {finding.get('start_line', '?')}-{finding.get('end_line', '?')}",
+        f"- Message: {finding.get('message', '')}",
+        "",
+        "## Vulnerable Code",
+        "```",
+        snippet,
+        "```",
+        "",
+        "## Security Knowledge Base",
+    ]
+
+    if citations:
+        for citation in citations:
+            prompt_parts.append(f"- {citation}")
+    else:
+        prompt_parts.append("- No specific guidance available")
+
+    prompt_parts.extend(
+        [
+            "",
+            "## Instructions",
+            "1. Return ONLY a unified diff (no prose, no commands)",
+            "2. Make minimal, localized changes",
+            "3. Preserve existing functionality",
+            "4. Follow the fix patterns from the knowledge base",
+            "5. Add any necessary imports",
+            "",
+            "## Output Format",
+            "```diff",
+            "--- a/path/to/file",
+            "+++ b/path/to/file",
+            "@@ ... @@",
+            " context line",
+            "-removed line",
+            "+added line",
+            "```",
+        ]
     )
+
+    return "\n".join(prompt_parts)
 
 
 def _write_json(path: Path, data: Any) -> None:
