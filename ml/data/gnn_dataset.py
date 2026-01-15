@@ -38,7 +38,7 @@ def _get_language(item: dict[str, Any], default_lang: str) -> str:
     language = item.get("language")
     if isinstance(language, str) and language.strip():
         return language.lower()
-    filepath = item.get("filepath") or ""
+    filepath = item.get("filepath") or item.get("file_path") or ""
     if isinstance(filepath, str) and filepath.endswith((".ts", ".tsx", ".js", ".jsx")):
         return "ts"
     return default_lang
@@ -61,9 +61,6 @@ def build_graph_samples(
             continue
 
         categories = _extract_categories(item)
-        if not categories:
-            skipped["no_label"] += 1
-            continue
         risk_label = _extract_risk_label(item)
         if risk_label is None or risk_label < 0:
             skipped["no_label"] += 1
@@ -80,12 +77,13 @@ def build_graph_samples(
             skipped["parse_fail"] += 1
             continue
         graph = graphs[0]
+        category = categories[0] if categories else ""
         samples.append(
             GraphSample(
                 sample_id=item.get("sample_id", ""),
                 graph=graph,
                 risk_label=risk_label,
-                category=categories[0],
+                category=category,
             )
         )
 

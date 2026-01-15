@@ -3,7 +3,12 @@ from __future__ import annotations
 import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Protocol
+
+# Load environment variables from .env file
+from dotenv import load_dotenv
+load_dotenv(Path(__file__).parent.parent / ".env")
 
 from llm.providers.gemini import GeminiProvider
 from llm.providers.local import LocalProvider

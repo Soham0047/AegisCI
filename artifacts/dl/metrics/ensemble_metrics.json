@@ -1,0 +1,11 @@
+{
+  "transformer_temp": 7.9628214836120605,
+  "gnn_temp": 8.66131591796875,
+  "weights": {
+    "transformer": 0.22253818399062988,
+    "gnn": 0.77746181600937
+  },
+  "transformer_f1": 0.13634218289085545,
+  "gnn_f1": 0.4763265306122449,
+  "calibration_samples": 157
+}

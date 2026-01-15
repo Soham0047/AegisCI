@@ -95,7 +95,7 @@ def train_ranker(args: argparse.Namespace) -> Path:
     y = torch.tensor(labels, dtype=torch.float32)
 
     model = PatchRankerModel(input_dim=len(FEATURE_NAMES), hidden_dim=args.hidden_dim)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     loss_fn = nn.BCEWithLogitsLoss()
 
     for _ in range(args.epochs):
@@ -110,15 +110,49 @@ def train_ranker(args: argparse.Namespace) -> Path:
     return out_dir / "patch_ranker.pt"
 
 
+def _env_int(name: str, default: int) -> int:
+    """Get integer from environment variable or return default."""
+    val = os.environ.get(name)
+    return int(val) if val else default
+
+
+def _env_float(name: str, default: float) -> float:
+    """Get float from environment variable or return default."""
+    val = os.environ.get(name)
+    return float(val) if val else default
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train the patch ranker model.")
     parser.add_argument("--out-dir", default=os.environ.get("DL_ARTIFACTS_DIR", "artifacts/dl"))
-    parser.add_argument("--epochs", type=int, default=5)
-    parser.add_argument("--lr", type=float, default=1e-2)
-    parser.add_argument("--seed", type=int, default=1337)
+    # Improved hyperparameters: lower LR, more epochs for better convergence
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=_env_int("DL_EPOCHS", 20),
+        help="Number of training epochs (env: DL_EPOCHS)",
+    )
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=_env_float("DL_LR", 5e-3),
+        help="Learning rate (env: DL_LR) - lower default for stability",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=_env_int("DL_SEED", 1337),
+        help="Random seed for reproducibility (env: DL_SEED)",
+    )
     parser.add_argument("--hidden-dim", type=int, default=16)
     parser.add_argument("--outcomes-db", default="backend/data/outcomes.db")
     parser.add_argument("--artifacts-root", default="artifacts/jobs")
+    parser.add_argument(
+        "--weight-decay",
+        type=float,
+        default=_env_float("DL_WEIGHT_DECAY", 0.01),
+        help="Weight decay for regularization (env: DL_WEIGHT_DECAY)",
+    )
     return parser
 
 

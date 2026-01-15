@@ -13,7 +13,7 @@ EXIT_CONFIG_ERROR = 3
 # Default configuration
 DEFAULT_CONFIG = {
     "base_ref": "main",
-    "semgrep_config": "p/ci",
+    "semgrep_config": "max",
     "output_dir": ".",
     "artifacts_dir": "artifacts",
     "report_format": "both",  # md, json, both

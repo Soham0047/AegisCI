@@ -1,0 +1,95 @@
+{
+  "started_at": "2026-01-11T04:09:54.478307+00:00",
+  "config": {
+    "targets": [
+      "."
+    ],
+    "epochs": 20,
+    "batch_size": 32,
+    "lr": 0.0002,
+    "seed": 42,
+    "device": "cpu",
+    "transformer_size": "medium",
+    "gnn_hidden_dim": 256,
+    "gnn_layers": 3,
+    "gnn_dropout": 0.2
+  },
+  "steps": {
+    "transformer": {
+      "model_path": "/tmp/securedev/models/transformer_enhanced.pt",
+      "metrics_path": "/tmp/securedev/models/metrics/transformer_metrics.json",
+      "best_macro_f1": 0.13634218289085545,
+      "epochs_trained": 20,
+      "model_name": "medium",
+      "vocab_size": 11445,
+      "n_categories": 18
+    },
+    "gnn": {
+      "model_path": "/tmp/securedev/models/gnn_enhanced.pt",
+      "metrics_path": "/tmp/securedev/models/metrics/gnn_metrics.json",
+      "best_macro_f1": 0.4763265306122449,
+      "epochs_trained": 20,
+      "hidden_dim": 256,
+      "layers": 3,
+      "dropout": 0.2,
+      "n_categories": 9,
+      "train_samples": 333,
+      "train_skipped": {
+        "no_code": 0,
+        "no_label": 0,
+        "parse_fail": 0
+      }
+    },
+    "ensemble": {
+      "model_path": "/tmp/securedev/models/ensemble_enhanced.pt",
+      "metrics_path": "/tmp/securedev/models/metrics/ensemble_metrics.json",
+      "weights": {
+        "transformer": 0.22253818399062988,
+        "gnn": 0.77746181600937
+      },
+      "transformer_temp": 7.9628214836120605,
+      "gnn_temp": 8.66131591796875
+    },
+    "export": {
+      "artifacts_dir": "/app/artifacts/dl",
+      "exports": [
+        "/app/artifacts/dl/transformer_enhanced.pt",
+        "/app/artifacts/dl/gnn_enhanced.pt",
+        "/app/artifacts/dl/ensemble_enhanced.pt"
+      ],
+      "manifest": "/app/artifacts/dl/enhanced_models_manifest.json"
+    },
+    "cleanup": {
+      "removed": [],
+      "kept": [
+        "/app/artifacts/dl/gnn_enhanced.pt",
+        "/app/artifacts/dl/transformer_enhanced.pt",
+        "/app/artifacts/dl/ensemble_enhanced.pt"
+      ]
+    },
+    "validate": {
+      "transformer": {
+        "valid": true,
+        "has_state_dict": true,
+        "n_categories": 18,
+        "best_f1": 0.13634218289085545
+      },
+      "gnn": {
+        "valid": true,
+        "has_state_dict": true,
+        "n_categories": 9,
+        "best_f1": 0.4763265306122449
+      },
+      "ensemble": {
+        "valid": true,
+        "has_stacker": true,
+        "weights": {
+          "transformer": 0.22253818399062988,
+          "gnn": 0.77746181600937
+        }
+      }
+    }
+  },
+  "completed_at": "2026-01-11T05:09:59.086469+00:00",
+  "success": true
+}

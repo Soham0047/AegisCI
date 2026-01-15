@@ -1,0 +1,138 @@
+{
+  "test": {
+    "risk": {
+      "accuracy": 0.9868686868686869,
+      "f1": 0.0,
+      "confusion_matrix": [
+        [
+          1954,
+          26
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "tn": 1954,
+      "fp": 26,
+      "fn": 0,
+      "tp": 0,
+      "auroc": null,
+      "note": "Only class 0 present in data"
+    },
+    "category": {
+      "per_class": {
+        "B324:hashlib": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "PATTERN-JS-007": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "PATTERN-PY-009": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "PATTERN-PY-010": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "code_injection": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "dependency.vuln": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "deserialization": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "python.flask.security.open-redirect.open-redirect": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "safe_class": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "safe_code": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "safe_function": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "secrets.hardcoded": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "sql_injection": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "typescript.react.security.react-insecure-request.react-insecure-request": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "xss": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        }
+      },
+      "macro_f1": 0.0,
+      "micro_f1": 0.0
+    }
+  }
+}

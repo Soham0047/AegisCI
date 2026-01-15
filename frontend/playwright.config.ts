@@ -1,7 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 const HOST = process.env.PLAYWRIGHT_HOST ?? "127.0.0.1";
-const PORT = Number(process.env.PLAYWRIGHT_PORT || "3000");
+const PORT = Number(process.env.PLAYWRIGHT_PORT || "3001");
 
 export default defineConfig({
   testDir: "./tests",
@@ -10,8 +10,8 @@ export default defineConfig({
     baseURL: `http://${HOST}:${PORT}`,
   },
   webServer: {
-    command: `NEXT_PUBLIC_API_BASE=http://${HOST}:${PORT}/api npm run dev -- --hostname ${HOST} --port ${PORT}`,
+    command: `rm -rf .next && NEXT_PUBLIC_API_BASE=http://${HOST}:${PORT}/api npm run build && npx next start -p ${PORT}`,
     port: PORT,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
   },
 });

@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from ml.models.transformer import SimpleVocab, build_model, tokenize_text
+from ml.models.transformer import SimpleVocab, build_model, tokenize_text  # noqa: E402
 
 
 class FocalLoss(nn.Module):
@@ -125,11 +125,18 @@ def _extract_categories(item: dict[str, Any]) -> list[str]:
 
 
 def _extract_risk_label(item: dict[str, Any]) -> int | None:
+    # Check for direct label field
     if item.get("label") is not None:
         try:
             return int(item["label"])
         except (TypeError, ValueError):
             return None
+    
+    # Check for is_vulnerable boolean field
+    if item.get("is_vulnerable") is not None:
+        return 1 if item["is_vulnerable"] else 0
+    
+    # Check for verdict field
     verdict = item.get("verdict")
     if verdict is None:
         gold = item.get("gold_labels") or {}
@@ -146,8 +153,6 @@ def build_records(items: Iterable[dict[str, Any]]) -> list[Record]:
     records: list[Record] = []
     for item in items:
         categories = _extract_categories(item)
-        if not categories:
-            continue
         risk_label = _extract_risk_label(item)
         if risk_label is None:
             continue
@@ -204,21 +209,38 @@ def _compute_metrics(
         accuracy_score = None
 
     metrics: dict[str, Any] = {"per_category": {}}
-    if precision_recall_fscore_support:
+    cat_dim = len(categories)
+    has_categories = cat_dim > 0 and y_true_cat and y_pred_cat
+    if has_categories:
+        if any(len(row) != cat_dim for row in y_true_cat):
+            has_categories = False
+        if any(len(row) != cat_dim for row in y_pred_cat):
+            has_categories = False
+        if has_categories:
+            try:
+                y_true_cat = [[1 if int(v) else 0 for v in row] for row in y_true_cat]
+                y_pred_cat = [[float(v) for v in row] for row in y_pred_cat]
+            except (TypeError, ValueError):
+                has_categories = False
+
+    if precision_recall_fscore_support and has_categories:
         pred_bin = [[1 if p >= 0.5 else 0 for p in row] for row in y_pred_cat]
-        precision, recall, f1, _ = precision_recall_fscore_support(
-            y_true_cat, pred_bin, average=None, zero_division=0
-        )
-        for idx, category in enumerate(categories):
-            metrics["per_category"][category] = {
-                "precision": float(precision[idx]),
-                "recall": float(recall[idx]),
-                "f1": float(f1[idx]),
-            }
-        macro = precision_recall_fscore_support(
-            y_true_cat, pred_bin, average="macro", zero_division=0
-        )
-        metrics["macro_f1"] = float(macro[2])
+        try:
+            precision, recall, f1, _ = precision_recall_fscore_support(
+                y_true_cat, pred_bin, average=None, zero_division=0
+            )
+            for idx, category in enumerate(categories):
+                metrics["per_category"][category] = {
+                    "precision": float(precision[idx]),
+                    "recall": float(recall[idx]),
+                    "f1": float(f1[idx]),
+                }
+            macro = precision_recall_fscore_support(
+                y_true_cat, pred_bin, average="macro", zero_division=0
+            )
+            metrics["macro_f1"] = float(macro[2])
+        except ValueError:
+            metrics["macro_f1"] = 0.0
     else:
         metrics["macro_f1"] = 0.0
 
@@ -319,13 +341,16 @@ def _compute_class_weights(records: list[Record], category_to_id: dict[str, int]
     """Compute inverse frequency weights for categories."""
     from collections import Counter
 
+    n_classes = len(category_to_id)
+    if n_classes == 0:
+        return torch.zeros(0)
+
     counts = Counter()
     for record in records:
         for cat in record.categories:
             if cat in category_to_id:
                 counts[category_to_id[cat]] += 1
 
-    n_classes = len(category_to_id)
     weights = torch.ones(n_classes)
     total = sum(counts.values())
     for idx, count in counts.items():
@@ -334,7 +359,8 @@ def _compute_class_weights(records: list[Record], category_to_id: dict[str, int]
             weights[idx] = total / (n_classes * count)
 
     # Normalize weights to have mean 1
-    weights = weights / weights.mean()
+    if weights.numel() > 0:
+        weights = weights / weights.mean()
     return weights
 
 
@@ -359,7 +385,9 @@ def train(args: argparse.Namespace) -> None:
     if not val_records:
         raise ValueError("No validation records found after filtering")
 
-    category_vocab = sorted({cat for record in train_records for cat in record.categories})
+    category_vocab = sorted(
+        {cat for record in train_records for cat in record.categories if cat}
+    )
     category_to_id = {cat: idx for idx, cat in enumerate(category_vocab)}
     vocab = SimpleVocab.build(record.tokens for record in train_records)
 
@@ -388,11 +416,19 @@ def train(args: argparse.Namespace) -> None:
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
 
     # Compute class weights for category loss
-    class_weights = _compute_class_weights(train_records, category_to_id).to(device)
-    loss_cat = nn.BCEWithLogitsLoss(pos_weight=class_weights)
-    print(
-        f"Using weighted BCE for categories (weight range: {class_weights.min():.2f} - {class_weights.max():.2f})"
-    )
+    loss_cat: nn.Module | None = None
+    if category_vocab and args.cat_weight > 0:
+        class_weights = _compute_class_weights(train_records, category_to_id).to(device)
+        if class_weights.numel() > 0 and not torch.isnan(class_weights).any():
+            loss_cat = nn.BCEWithLogitsLoss(pos_weight=class_weights)
+            print(
+                "Using weighted BCE for categories (weight range: "
+                f"{class_weights.min():.2f} - {class_weights.max():.2f})"
+            )
+        else:
+            loss_cat = None
+    if loss_cat is None:
+        print("No category labels found; training risk-only head.")
 
     loss_risk = nn.BCEWithLogitsLoss()
 
@@ -427,9 +463,12 @@ def train(args: argparse.Namespace) -> None:
             cat_logits, risk_logit = model(input_ids=input_ids, attention_mask=attention)
 
             # Weighted loss combination - give more weight to risk task initially
-            cat_loss = loss_cat(cat_logits, cat_labels)
+            cat_loss = torch.tensor(0.0, device=device)
+            if loss_cat is not None and cat_labels.numel() > 0:
+                cat_loss = loss_cat(cat_logits, cat_labels)
             risk_loss = loss_risk(risk_logit, risk_labels)
-            loss = args.cat_weight * cat_loss + args.risk_weight * risk_loss
+            cat_weight = args.cat_weight if loss_cat is not None else 0.0
+            loss = cat_weight * cat_loss + args.risk_weight * risk_loss
             loss.backward()
 
             # Gradient clipping
@@ -458,6 +497,12 @@ def train(args: argparse.Namespace) -> None:
         )
 
         score = val_metrics.get("macro_f1", 0.0)
+        if not category_vocab:
+            risk_auroc = val_metrics.get("risk_auroc", float("nan"))
+            if not math.isnan(risk_auroc):
+                score = risk_auroc
+            else:
+                score = val_metrics.get("risk_accuracy", 0.0)
         if score > best_metric:
             best_metric = score
             best_state = {k: v.cpu() for k, v in model.state_dict().items()}

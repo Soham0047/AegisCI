@@ -5,7 +5,7 @@ import subprocess
 
 def list_files(directory: str) -> str:
     """List files in a directory. VULNERABLE: uses shell=True with user input."""
-    result = subprocess.run(f"ls {directory}", shell=True, capture_output=True, text=True)
+    result = subprocess.run(["ls", directory], capture_output=True, text=True)
     return result.stdout
 
 

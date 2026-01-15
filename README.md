@@ -2,20 +2,52 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/YOUR_USERNAME/securedev-guardian/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/securedev-guardian/actions)
 
-An **AI-powered Security Scanner CLI** for Python + JS/TS codebases with automated vulnerability detection and patching recommendations.
+An **AI-powered Security Scanner CLI** for Python + JS/TS codebases with automated vulnerability detection, ML-based risk scoring, and patching recommendations.
 
-## 🚀 Quick Install
+## 🚀 Quick Start
+
+### Option 1: One-Line Install (Recommended)
 
 ```bash
-# Install from source
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/securedev-guardian.git
+cd securedev-guardian
+
+# Run the quick start script
+./scripts/quickstart.sh
+```
+
+### Option 2: Manual Install
+
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/securedev-guardian.git
+cd securedev-guardian
+
+# Pull Git LFS files (ML models)
+git lfs pull
+
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install the package
 pip install -e .
 
-# Or install with pipx (recommended for CLI tools)
-pipx install .
+# Install security scanners
+pip install bandit semgrep
 
 # Verify installation
 guardian --help
+guardian check
+```
+
+### Option 3: Install from PyPI (when published)
+
+```bash
+pip install securedev-guardian
 ```
 
 ## 📖 CLI Usage
@@ -274,6 +306,17 @@ docker-compose up -d redis worker api dashboard
 
 ---
 
+## ☁️ Cloud Deployment (GCP)
+
+Production deployment uses:
+- Cloud Run for the API/backend
+- Vertex AI for large-scale training
+- Cloud Build for Docker-based patch validation
+
+See `docs/GCP_DEPLOY.md` for setup and commands.
+
+---
+
 ## Architecture
 
 ### ML Pipeline (Phases 3-5)
@@ -289,8 +332,19 @@ Findings → Transformer Encoder → Risk Score (0-1)
 ```
 
 **Trained Models:**
-- `artifacts/transformer_final.pt` - RoBERTa-based classifier
-- `artifacts/gnn_v1.pt` - GraphSAGE model
+- `artifacts/dl/binary_classifier.pt` - LSTM-based binary classifier (F1: 0.92)
+- `artifacts/dl/transformer_enhanced.pt` - RoBERTa-based multi-task classifier
+- `artifacts/dl/gnn_enhanced.pt` - GraphSAGE model for code graphs
+- `artifacts/dl/ensemble_enhanced.pt` - Weighted ensemble combiner
+
+**ML-Enhanced Scanning:**
+```bash
+# Run scan with ML risk scoring
+guardian scan --ml-enhance
+
+# View ML model predictions
+guardian scan --ml-enhance --verbose
+```
 
 ### Patch Generation (Phases 6-7)
 
@@ -416,3 +470,72 @@ pytest -k "transformer"    # Phase 3
 ## License
 
 MIT
+
+---
+
+## 🌐 Hosting on GitHub
+
+### Quick Setup
+
+1. **Create a new GitHub repository**
+   ```bash
+   gh repo create securedev-guardian --public --source=. --push
+   ```
+   Or manually create on github.com and push.
+
+2. **Initialize Git LFS for large models** (optional but recommended)
+   ```bash
+   git lfs install
+   git lfs track "artifacts/dl/*.pt"
+   git add .gitattributes
+   git commit -m "chore: add Git LFS tracking for models"
+   ```
+
+3. **Push to GitHub**
+   ```bash
+   git add -A
+   git commit -m "chore: production-ready release"
+   git push origin main
+   ```
+
+### Release Process
+
+1. **Tag a version**
+   ```bash
+   git tag -a v1.0.0 -m "Release v1.0.0"
+   git push origin v1.0.0
+   ```
+
+2. **GitHub Actions will automatically:**
+   - Run tests
+   - Build Docker images
+   - Create GitHub Release
+   - Publish to PyPI (if token configured)
+
+### For Users
+
+Users can install directly from GitHub:
+```bash
+pip install git+https://github.com/yourusername/securedev-guardian.git
+```
+
+Or clone and install locally:
+```bash
+git clone https://github.com/yourusername/securedev-guardian.git
+cd securedev-guardian
+pip install -e .
+guardian --help
+```
+
+### ML Models
+
+The production ML models are located in `artifacts/dl/`:
+
+| Model | Size | F1 Score | Description |
+|-------|------|----------|-------------|
+| `gnn_enhanced.pt` | ~10MB | 0.476 | Best performer - Graph Neural Network |
+| `transformer_enhanced.pt` | ~97MB | 0.136 | Token-based Transformer |
+| `ensemble_enhanced.pt` | ~4KB | - | Weighted ensemble (77.7% GNN) |
+| `binary_classifier.pt` | ~1MB | - | Simple binary classifier |
+
+The ensemble prioritizes the GNN model which shows the best performance on vulnerability classification.

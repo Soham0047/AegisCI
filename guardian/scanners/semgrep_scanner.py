@@ -42,7 +42,6 @@ SEMGREP_RULESETS = {
     # Framework-specific
     "django": "p/django",
     "flask": "p/flask",
-    "express": "p/express",
     "nextjs": "p/nextjs",
     
     # Default CI ruleset
@@ -52,15 +51,21 @@ SEMGREP_RULESETS = {
 # Default rulesets to run for comprehensive scanning
 DEFAULT_RULESETS = [
     "p/security-audit",
-    "p/owasp-top-ten", 
+    "p/owasp-top-ten",
     "p/secrets",
+    "p/sql-injection",
+    "p/xss",
+    "p/command-injection",
 ]
+
+# Max rulesets to run for exhaustive scanning (all known packs in this repo)
+MAX_RULESETS = sorted(set(SEMGREP_RULESETS.values()))
 
 # Language-specific ruleset mapping
 LANGUAGE_RULESETS = {
     ".py": ["p/python", "p/django", "p/flask"],
-    ".js": ["p/javascript", "p/nodejs", "p/express", "p/react"],
-    ".ts": ["p/typescript", "p/nodejs", "p/express", "p/react"],
+    ".js": ["p/javascript", "p/nodejs", "p/react"],
+    ".ts": ["p/typescript", "p/nodejs", "p/react"],
     ".tsx": ["p/typescript", "p/react", "p/nextjs"],
     ".jsx": ["p/javascript", "p/react"],
 }
@@ -165,7 +170,10 @@ def run_semgrep(
         }
 
 
-def run_semgrep_comprehensive(files: list[str]) -> dict[str, Any]:
+def run_semgrep_comprehensive(
+    files: list[str],
+    include_experimental: bool = False,
+) -> dict[str, Any]:
     """
     Run Semgrep with comprehensive security rulesets.
     
@@ -182,8 +190,51 @@ def run_semgrep_comprehensive(files: list[str]) -> dict[str, Any]:
             if file.endswith(ext):
                 rulesets.update(ext_rulesets)
     
-    return run_semgrep(files, config=list(rulesets))
+    aggregated: dict[str, Any] = {
+        "results": [],
+        "errors": [],
+        "paths": {"scanned": files},
+        "scanner": "semgrep",
+        "version": _get_semgrep_version(),
+        "configs_used": [],
+    }
 
+    for cfg in sorted(rulesets):
+        result = run_semgrep(files, config=cfg, include_experimental=include_experimental)
+        aggregated["results"].extend(result.get("results", []))
+        errors = result.get("errors", [])
+        if errors:
+            aggregated["errors"].extend(errors)
+        else:
+            aggregated["configs_used"].append(cfg)
+
+    return aggregated
+
+
+def run_semgrep_max(files: list[str], include_experimental: bool = True) -> dict[str, Any]:
+    """Run Semgrep with every known ruleset for maximum coverage."""
+    if not files:
+        return {"results": [], "errors": [], "paths": {"scanned": []}}
+
+    aggregated: dict[str, Any] = {
+        "results": [],
+        "errors": [],
+        "paths": {"scanned": files},
+        "scanner": "semgrep",
+        "version": _get_semgrep_version(),
+        "configs_used": [],
+    }
+
+    for cfg in MAX_RULESETS:
+        result = run_semgrep(files, config=cfg, include_experimental=include_experimental)
+        aggregated["results"].extend(result.get("results", []))
+        errors = result.get("errors", [])
+        if errors:
+            aggregated["errors"].extend(errors)
+        else:
+            aggregated["configs_used"].append(cfg)
+
+    return aggregated
 
 def run_semgrep_secrets(files: list[str]) -> dict[str, Any]:
     """Run Semgrep specifically for secrets detection."""
@@ -234,4 +285,3 @@ def get_rule_category(rule_id: str) -> str:
         if any(kw in rule_lower for kw in keywords):
             return category
     return "security"
-

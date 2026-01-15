@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import logging
+import textwrap
 from collections.abc import Iterable
 
 import torch
@@ -17,6 +18,17 @@ from ml.graphs.common import (
 LOGGER = logging.getLogger(__name__)
 DEFAULT_MAX_NODES = 2048
 DEFAULT_MAX_EDGES = 8192
+_WARN_LIMIT = 25
+_warn_count = 0
+
+
+def _log_parse_error(exc: Exception) -> None:
+    global _warn_count
+    if _warn_count < _WARN_LIMIT:
+        LOGGER.warning("Python parse error: %s", exc)
+        if _warn_count == _WARN_LIMIT - 1:
+            LOGGER.warning("Suppressing further Python parse errors.")
+    _warn_count += 1
 
 
 def _identifier_for_node(node: ast.AST) -> str | None:
@@ -173,11 +185,26 @@ def build_python_graphs(
     max_nodes: int = DEFAULT_MAX_NODES,
     max_edges: int = DEFAULT_MAX_EDGES,
 ) -> list[GraphData]:
-    try:
-        tree = ast.parse(code)
-    except SyntaxError as exc:
-        LOGGER.warning("Python parse error: %s", exc)
+    if not code.strip():
         return []
+
+    tree: ast.AST | None = None
+    last_exc: Exception | None = None
+    for candidate in (code, textwrap.dedent(code)):
+        try:
+            tree = ast.parse(candidate)
+            break
+        except SyntaxError as exc:
+            last_exc = exc
+            continue
+
+    if tree is None:
+        wrapped = "def __snippet__():\n" + textwrap.indent(textwrap.dedent(code), "    ")
+        try:
+            tree = ast.parse(wrapped)
+        except SyntaxError as exc:
+            _log_parse_error(exc if exc else last_exc or exc)
+            return []
 
     functions = [
         node for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))

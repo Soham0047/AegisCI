@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+import os
+import shutil
 import subprocess
 import sys
+import tempfile
 from collections.abc import Callable
 from dataclasses import dataclass
 from hashlib import sha1
@@ -10,7 +13,9 @@ from pathlib import Path
 from typing import Any
 
 from patcher import generate_patches
+from patcher.diff import make_unified_diff, normalize_unified_diff
 from patcher.llm_client import generate_patch, redact_text
+from patcher.policy import decision_to_json, evaluate_llm_diff
 from patcher.ranker import Candidate, rank_candidates
 from patcher.types import NormalizedFinding
 from rag.indexer import build_index
@@ -76,14 +81,31 @@ def run_orchestrator(
             raw_path = finding_dir / f"candidate_{idx}_raw.txt"
             raw_path.write_text(redact_text(result.raw), encoding="utf-8")
             if result.ok and result.diff:
-                diff_path.write_text(result.diff, encoding="utf-8")
+                normalized = normalize_unified_diff(result.diff)
+                rebased = _rebuild_diff_with_context(repo_root, normalized)
+                diff_path.write_text(rebased, encoding="utf-8")
+                policy = evaluate_llm_diff(rebased, finding, repo_root)
+                _write_json(finding_dir / f"policy_{idx}.json", decision_to_json(policy))
+                if not policy.allowed:
+                    candidates_list.append(
+                        Candidate(
+                            candidate_id=f"llm-{idx}",
+                            diff=rebased,
+                            source="llm",
+                            diff_ok=False,
+                            validated=False,
+                            validation_status=f"policy: {policy.reason}",
+                            metadata={"policy": decision_to_json(policy)},
+                        )
+                    )
+                    continue
                 validation = _validate(
                     validator, repo_root, commit, diff_path, finding_dir, str(idx)
                 )
                 candidates_list.append(
                     Candidate(
                         candidate_id=f"llm-{idx}",
-                        diff=result.diff,
+                        diff=rebased,
                         source="llm",
                         diff_ok=True,
                         validated=validation.ok,
@@ -161,6 +183,8 @@ def _run_validator_subprocess(
     finding_dir: Path,
     label: str,
 ) -> ValidationResult:
+    tool_root = Path(__file__).resolve().parents[1]
+    dockerfile = tool_root / "docker" / "validator.Dockerfile"
     cmd = [
         sys.executable,
         "-m",
@@ -172,13 +196,102 @@ def _run_validator_subprocess(
         "--patch",
         str(diff_path),
     ]
+    if dockerfile.exists():
+        cmd.extend(["--dockerfile", str(dockerfile)])
+    if os.getenv("VALIDATOR_ALLOW_NETWORK", "").lower() in {"1", "true", "yes"}:
+        cmd.append("--allow-network")
+    lint_mode = os.getenv("VALIDATOR_LINT_MODE")
+    if lint_mode in {"strict", "changed", "off"}:
+        cmd.extend(["--lint-mode", lint_mode])
+    test_mode = os.getenv("VALIDATOR_TEST_MODE")
+    if test_mode in {"strict", "off"}:
+        cmd.extend(["--test-mode", test_mode])
+    if os.getenv("VALIDATOR_BASELINE", "").lower() in {"1", "true", "yes"}:
+        cmd.append("--baseline")
     proc = subprocess.run(cmd, capture_output=True, text=True)
     report_path = finding_dir / f"validation_{label}.json"
+    (finding_dir / f"validation_{label}.out").write_text(proc.stdout or "", encoding="utf-8")
+    (finding_dir / f"validation_{label}.err").write_text(proc.stderr or "", encoding="utf-8")
+
+    report = None
     if proc.stdout:
-        report_path.write_text(proc.stdout, encoding="utf-8")
-    ok = proc.returncode == 0 and '"validated"' in proc.stdout
+        try:
+            report = json.loads(proc.stdout)
+        except Exception:
+            report = None
+    if report is None and proc.stderr:
+        try:
+            report = json.loads(proc.stderr)
+        except Exception:
+            report = None
+
+    if report is None:
+        report = {
+            "status": "rejected" if proc.returncode != 0 else "unknown",
+            "reason": proc.stderr.strip() or proc.stdout.strip() or "unknown validator output",
+        }
+
+    report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    ok = report.get("status") == "validated"
     status = "validated" if ok else "rejected"
     return ValidationResult(ok=ok, status=status, report_path=str(report_path))
+
+
+def _rebuild_diff_with_context(repo_root: Path, diff_text: str) -> str:
+    if not diff_text.strip():
+        return diff_text
+    if shutil.which("patch") is None:
+        return diff_text
+    path = _extract_single_path(diff_text)
+    if path is None:
+        return diff_text
+    source_path = repo_root / path
+    if not source_path.exists():
+        return diff_text
+    old_text = source_path.read_text(encoding="utf-8")
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_root = Path(temp_dir)
+        temp_path = temp_root / path
+        temp_path.parent.mkdir(parents=True, exist_ok=True)
+        temp_path.write_text(old_text, encoding="utf-8")
+        proc = subprocess.run(
+            ["patch", "-p1", "--fuzz=0", "--quiet"],
+            input=diff_text,
+            text=True,
+            capture_output=True,
+            cwd=temp_root,
+        )
+        if proc.returncode != 0:
+            return diff_text
+        new_text = temp_path.read_text(encoding="utf-8")
+    if new_text == old_text:
+        return diff_text
+    return make_unified_diff(path, old_text, new_text)
+
+
+def _extract_single_path(diff_text: str) -> str | None:
+    paths: list[str] = []
+    for line in diff_text.splitlines():
+        if line.startswith("diff --git "):
+            parts = line.split()
+            if len(parts) >= 4:
+                path = parts[3]
+                if path.startswith("b/"):
+                    path = path[2:]
+                paths.append(path)
+        elif line.startswith("+++ "):
+            path = line[4:].strip()
+            if path.startswith("b/"):
+                path = path[2:]
+            if path and path != "/dev/null":
+                paths.append(path)
+    unique = []
+    for path in paths:
+        if path not in unique:
+            unique.append(path)
+    if len(unique) == 1:
+        return unique[0]
+    return None
 
 
 def _build_context(repo_root: Path, finding: NormalizedFinding) -> dict[str, Any]:

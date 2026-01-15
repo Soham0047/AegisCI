@@ -20,10 +20,14 @@ def load_model(
     """Load model from checkpoint."""
     ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
 
-    vocab = SimpleVocab(token_to_id=ckpt["vocab"], id_to_token=list(ckpt["vocab"].keys()))
+    vocab_data = ckpt.get("vocab", {})
+    if isinstance(vocab_data, dict) and "token_to_id" in vocab_data:
+        vocab = SimpleVocab.from_dict(vocab_data)
+    else:
+        vocab = SimpleVocab(token_to_id=vocab_data, id_to_token=list(vocab_data.keys()))
 
     model = build_model(
-        model_name=ckpt["model_name"],
+        model_name=ckpt.get("model_name", "small"),
         num_categories=len(ckpt["category_vocab"]),
         vocab_size=vocab.size,
         max_len=ckpt["max_len"],
@@ -58,6 +62,8 @@ def evaluate_dataset(
     all_risk_true = []
     all_cat_preds = []
     all_cat_true = []
+    cat_dim = len(categories)
+    has_categories = cat_dim > 0
 
     with torch.no_grad():
         for batch in loader:
@@ -76,12 +82,13 @@ def evaluate_dataset(
             all_risk_preds.extend(risk_preds.cpu().tolist())
             all_risk_true.extend(risk_labels.int().tolist())
 
-            # Category predictions (multi-label)
-            cat_probs = torch.sigmoid(cat_logits)
-            cat_preds = (cat_probs >= 0.5).int()
+            if has_categories:
+                # Category predictions (multi-label)
+                cat_probs = torch.sigmoid(cat_logits)
+                cat_preds = (cat_probs >= 0.5).int()
 
-            all_cat_preds.extend(cat_preds.cpu().tolist())
-            all_cat_true.extend(cat_labels.int().tolist())
+                all_cat_preds.extend(cat_preds.cpu().tolist())
+                all_cat_true.extend(cat_labels.int().tolist())
 
     # Risk metrics
     metrics = {"risk": {}}
@@ -116,23 +123,50 @@ def evaluate_dataset(
             metrics["risk"]["note"] = f"Only class {list(unique_labels)[0]} present in data"
 
     # Category metrics
-    precision, recall, f1, support = precision_recall_fscore_support(
-        all_cat_true, all_cat_preds, average=None, zero_division=0
-    )
+    if has_categories and all_cat_true and all_cat_preds:
+        if any(len(row) != cat_dim for row in all_cat_true):
+            has_categories = False
+        if any(len(row) != cat_dim for row in all_cat_preds):
+            has_categories = False
+        if has_categories:
+            try:
+                all_cat_true = [[1 if int(v) else 0 for v in row] for row in all_cat_true]
+                all_cat_preds = [[1 if int(v) else 0 for v in row] for row in all_cat_preds]
+            except (TypeError, ValueError):
+                has_categories = False
 
-    metrics["category"] = {
-        "per_class": {},
-        "macro_f1": float(f1_score(all_cat_true, all_cat_preds, average="macro", zero_division=0)),
-        "micro_f1": float(f1_score(all_cat_true, all_cat_preds, average="micro", zero_division=0)),
-    }
+    if has_categories and all_cat_true and all_cat_preds:
+        try:
+            precision, recall, f1, support = precision_recall_fscore_support(
+                all_cat_true, all_cat_preds, average=None, zero_division=0
+            )
 
-    for i, cat in enumerate(categories):
-        metrics["category"]["per_class"][cat] = {
-            "precision": float(precision[i]),
-            "recall": float(recall[i]),
-            "f1": float(f1[i]),
-            "support": int(support[i]) if i < len(support) else 0,
-        }
+            metrics["category"] = {
+                "per_class": {},
+                "macro_f1": float(
+                    f1_score(all_cat_true, all_cat_preds, average="macro", zero_division=0)
+                ),
+                "micro_f1": float(
+                    f1_score(all_cat_true, all_cat_preds, average="micro", zero_division=0)
+                ),
+            }
+
+            for i, cat in enumerate(categories):
+                metrics["category"]["per_class"][cat] = {
+                    "precision": float(precision[i]) if i < len(precision) else 0.0,
+                    "recall": float(recall[i]) if i < len(recall) else 0.0,
+                    "f1": float(f1[i]) if i < len(f1) else 0.0,
+                    "support": int(support[i]) if i < len(support) else 0,
+                }
+        except ValueError:
+            metrics["category"] = {"per_class": {}, "macro_f1": 0.0, "micro_f1": 0.0}
+            metrics["category"]["note"] = "invalid category labels in dataset"
+    else:
+        metrics["category"] = {"per_class": {}, "macro_f1": 0.0, "micro_f1": 0.0}
+        if not has_categories:
+            metrics["category"]["note"] = "no categories in checkpoint"
+        else:
+            metrics["category"]["note"] = "no category labels in dataset"
 
     return metrics
 
@@ -164,11 +198,16 @@ def print_metrics(metrics: dict, dataset_name: str) -> None:
     print(f"   Macro F1:  {cat.get('macro_f1', 0):.4f}")
     print(f"   Micro F1:  {cat.get('micro_f1', 0):.4f}")
 
+    per_class = cat.get("per_class", {})
+    if not per_class:
+        note = cat.get("note", "no category metrics available")
+        print(f"   (skipped) {note}")
+        return
+
     print("\n   Per-Category Performance:")
     print(f"   {'Category':<30} {'Prec':>6} {'Rec':>6} {'F1':>6} {'Support':>8}")
     print(f"   {'-'*58}")
 
-    per_class = cat.get("per_class", {})
     for cat_name, cat_metrics in sorted(per_class.items(), key=lambda x: -x[1].get("f1", 0)):
         print(
             f"   {cat_name:<30} {cat_metrics['precision']:>6.2f} {cat_metrics['recall']:>6.2f} "

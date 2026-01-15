@@ -1,0 +1,1982 @@
+[
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.0,
+    "risk_auroc": 0.9285714285714286,
+    "risk_accuracy": 0.910828025477707,
+    "epoch": 1,
+    "train_loss": 0.6017361417412758
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.0,
+    "risk_auroc": 0.9305694305694306,
+    "risk_accuracy": 0.910828025477707,
+    "epoch": 2,
+    "train_loss": 0.4381085366010666
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.175,
+        "recall": 0.09333333333333334,
+        "f1": 0.12173913043478261
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.00676328502415459,
+    "risk_auroc": 0.9895104895104895,
+    "risk_accuracy": 0.9235668789808917,
+    "epoch": 3,
+    "train_loss": 0.3560671888291836
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.0,
+    "risk_auroc": 0.9855144855144855,
+    "risk_accuracy": 0.9745222929936306,
+    "epoch": 4,
+    "train_loss": 0.22234617900103332
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.5285714285714286,
+        "recall": 0.9866666666666667,
+        "f1": 0.6883720930232559
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.03824289405684755,
+    "risk_auroc": 0.9935064935064936,
+    "risk_accuracy": 0.9808917197452229,
+    "epoch": 5,
+    "train_loss": 0.16178530119359494
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5,
+        "recall": 0.75,
+        "f1": 0.6
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.03333333333333333,
+    "risk_auroc": 0.989010989010989,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 6,
+    "train_loss": 0.1427871135994792
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.5285714285714286,
+        "recall": 0.9866666666666667,
+        "f1": 0.6883720930232559
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5333333333333333,
+        "recall": 1.0,
+        "f1": 0.6956521739130435
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.07689023705201664,
+    "risk_auroc": 0.9940059940059941,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 7,
+    "train_loss": 0.12310882061719894
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.8395061728395061,
+        "recall": 0.9066666666666666,
+        "f1": 0.8717948717948718
+      },
+      "safe_function": {
+        "precision": 0.6326530612244898,
+        "recall": 0.6739130434782609,
+        "f1": 0.6526315789473685
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5,
+        "recall": 0.875,
+        "f1": 0.6363636363636364
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.12004389372810426,
+    "risk_auroc": 0.9945054945054945,
+    "risk_accuracy": 0.9745222929936306,
+    "epoch": 8,
+    "train_loss": 0.10420431224629283
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.5211267605633803,
+        "recall": 0.9866666666666667,
+        "f1": 0.6820276497695853
+      },
+      "safe_function": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "secrets.hardcoded": {
+        "precision": 0.4666666666666667,
+        "recall": 0.875,
+        "f1": 0.6086956521739131
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.07170685010797213,
+    "risk_auroc": 0.991008991008991,
+    "risk_accuracy": 0.9808917197452229,
+    "epoch": 9,
+    "train_loss": 0.1403698807116598
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.9473684210526315,
+        "recall": 0.96,
+        "f1": 0.9536423841059603
+      },
+      "safe_function": {
+        "precision": 0.6865671641791045,
+        "recall": 1.0,
+        "f1": 0.8141592920353983
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5,
+        "recall": 0.875,
+        "f1": 0.6363636363636364
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.13356473958361081,
+    "risk_auroc": 0.9915084915084915,
+    "risk_accuracy": 0.9745222929936306,
+    "epoch": 10,
+    "train_loss": 0.0998351115733385
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.9146341463414634,
+        "recall": 1.0,
+        "f1": 0.9554140127388535
+      },
+      "safe_function": {
+        "precision": 0.696969696969697,
+        "recall": 1.0,
+        "f1": 0.8214285714285714
+      },
+      "secrets.hardcoded": {
+        "precision": 0.4444444444444444,
+        "recall": 0.5,
+        "f1": 0.47058823529411764
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.12485726774786349,
+    "risk_auroc": 0.961038961038961,
+    "risk_accuracy": 0.9554140127388535,
+    "epoch": 11,
+    "train_loss": 0.08800693517550826
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.948051948051948,
+        "recall": 0.9733333333333334,
+        "f1": 0.9605263157894737
+      },
+      "safe_function": {
+        "precision": 0.7142857142857143,
+        "recall": 0.9782608695652174,
+        "f1": 0.8256880733944955
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5384615384615384,
+        "recall": 0.875,
+        "f1": 0.6666666666666666
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.13627116976947976,
+    "risk_auroc": 0.9865134865134865,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 12,
+    "train_loss": 0.08719423916190863
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.9473684210526315,
+        "recall": 0.96,
+        "f1": 0.9536423841059603
+      },
+      "safe_function": {
+        "precision": 0.703125,
+        "recall": 0.9782608695652174,
+        "f1": 0.8181818181818182
+      },
+      "secrets.hardcoded": {
+        "precision": 0.4666666666666667,
+        "recall": 0.875,
+        "f1": 0.6086956521739131
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.13225110302564955,
+    "risk_auroc": 0.9910089910089911,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 13,
+    "train_loss": 0.06378472438082099
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.972972972972973,
+        "recall": 0.96,
+        "f1": 0.9664429530201343
+      },
+      "safe_function": {
+        "precision": 0.6764705882352942,
+        "recall": 1.0,
+        "f1": 0.8070175438596491
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5,
+        "recall": 0.875,
+        "f1": 0.6363636363636364
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.13387911851352333,
+    "risk_auroc": 0.9250749250749252,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 14,
+    "train_loss": 0.05836434569209814
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.96,
+        "recall": 0.96,
+        "f1": 0.96
+      },
+      "safe_function": {
+        "precision": 0.696969696969697,
+        "recall": 1.0,
+        "f1": 0.8214285714285714
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5,
+        "recall": 0.875,
+        "f1": 0.6363636363636364
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.13432178932178931,
+    "risk_auroc": 0.9580419580419579,
+    "risk_accuracy": 0.9617834394904459,
+    "epoch": 15,
+    "train_loss": 0.05599977802485227
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.9864864864864865,
+        "recall": 0.9733333333333334,
+        "f1": 0.9798657718120806
+      },
+      "safe_function": {
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1": 0.8
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5,
+        "recall": 0.75,
+        "f1": 0.6
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.13221476510067115,
+    "risk_auroc": 0.9255744255744255,
+    "risk_accuracy": 0.9745222929936306,
+    "epoch": 16,
+    "train_loss": 0.06554885166697204
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.948051948051948,
+        "recall": 0.9733333333333334,
+        "f1": 0.9605263157894737
+      },
+      "safe_function": {
+        "precision": 0.71875,
+        "recall": 1.0,
+        "f1": 0.8363636363636363
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5,
+        "recall": 0.875,
+        "f1": 0.6363636363636364
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.135180754917597,
+    "risk_auroc": 0.9815184815184815,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 17,
+    "train_loss": 0.05561802871525288
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.972972972972973,
+        "recall": 0.96,
+        "f1": 0.9664429530201343
+      },
+      "safe_function": {
+        "precision": 0.6764705882352942,
+        "recall": 1.0,
+        "f1": 0.8070175438596491
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5384615384615384,
+        "recall": 0.875,
+        "f1": 0.6666666666666666
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.135562620197025,
+    "risk_auroc": 0.9235764235764236,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 18,
+    "train_loss": 0.05831176433712244
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.9733333333333334,
+        "recall": 0.9733333333333334,
+        "f1": 0.9733333333333334
+      },
+      "safe_function": {
+        "precision": 0.6865671641791045,
+        "recall": 1.0,
+        "f1": 0.8141592920353983
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5384615384615384,
+        "recall": 0.875,
+        "f1": 0.6666666666666666
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.13634218289085545,
+    "risk_auroc": 0.9280719280719281,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 19,
+    "train_loss": 0.054345515463501214
+  },
+  {
+    "per_category": {
+      "B324:hashlib": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-JS-007": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-009": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "PATTERN-PY-010": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "code_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "dependency.vuln": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "deserialization": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "javascript.express.security.audit.express-session-hardcoded-secret.express-session-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.django.security.audit.avoid-mark-safe.avoid-mark-safe": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.flask.security.open-redirect.open-redirect": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "python.jwt.security.jwt-hardcode.jwt-python-hardcoded-secret": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_class": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "safe_code": {
+        "precision": 0.972972972972973,
+        "recall": 0.96,
+        "f1": 0.9664429530201343
+      },
+      "safe_function": {
+        "precision": 0.6764705882352942,
+        "recall": 1.0,
+        "f1": 0.8070175438596491
+      },
+      "secrets.hardcoded": {
+        "precision": 0.5384615384615384,
+        "recall": 0.875,
+        "f1": 0.6666666666666666
+      },
+      "sql_injection": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "typescript.react.security.react-insecure-request.react-insecure-request": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      },
+      "xss": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0
+      }
+    },
+    "macro_f1": 0.135562620197025,
+    "risk_auroc": 0.9250749250749251,
+    "risk_accuracy": 0.9681528662420382,
+    "epoch": 20,
+    "train_loss": 0.054468100611120465
+  }
+]

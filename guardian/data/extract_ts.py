@@ -72,7 +72,7 @@ def extract_ts_samples(
     tool_versions = tool_versions or {}
     try:
         source = file_path.read_text(encoding="utf-8")
-    except OSError as exc:
+    except (OSError, UnicodeDecodeError) as exc:
         LOGGER.warning("Failed to read %s: %s", file_path, exc)
         return []
 

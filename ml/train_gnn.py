@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import random
 import sys
@@ -37,16 +38,42 @@ def compute_metrics(
     num_categories: int,
 ) -> dict[str, Any]:
     try:
-        from sklearn.metrics import f1_score, roc_auc_score
+        from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
     except ImportError:  # pragma: no cover
-        return {"macro_f1": 0.0, "risk_auroc": float("nan")}
+        return {"macro_f1": 0.0, "risk_auroc": float("nan"), "risk_accuracy": 0.0}
 
-    cat_preds = [int(max(range(num_categories), key=lambda i: row[i])) for row in cat_logits]
-    macro_f1 = f1_score(cat_labels, cat_preds, average="macro", zero_division=0)
+    macro_f1 = 0.0
+    if num_categories <= 0:
+        cat_logits = []
+        cat_labels = []
+    if num_categories > 0 and cat_logits and cat_labels:
+        filtered: list[tuple[int, list[float]]] = []
+        for label, row in zip(cat_labels, cat_logits):
+            if len(row) >= num_categories:
+                filtered.append((label, row))
+        if filtered:
+            labels, rows = zip(*filtered)
+            try:
+                cat_preds = [
+                    int(max(range(num_categories), key=lambda i: row[i])) for row in rows
+                ]
+                macro_f1 = f1_score(list(labels), cat_preds, average="macro", zero_division=0)
+            except ValueError:
+                macro_f1 = 0.0
+
     risk_auroc = float("nan")
-    if len(set(risk_labels)) > 1:
-        risk_auroc = roc_auc_score(risk_labels, risk_probs)
-    return {"macro_f1": float(macro_f1), "risk_auroc": float(risk_auroc)}
+    risk_accuracy = 0.0
+    if risk_labels:
+        if len(set(risk_labels)) > 1:
+            risk_auroc = roc_auc_score(risk_labels, risk_probs)
+        risk_preds = [1 if p >= 0.5 else 0 for p in risk_probs]
+        risk_accuracy = accuracy_score(risk_labels, risk_preds)
+
+    return {
+        "macro_f1": float(macro_f1),
+        "risk_auroc": float(risk_auroc),
+        "risk_accuracy": float(risk_accuracy),
+    }
 
 
 def evaluate(
@@ -68,8 +95,9 @@ def evaluate(
             risk_prob = torch.sigmoid(risk_logit)
             all_risk_labels.extend(batch.risk_labels.int().tolist())
             all_risk_probs.extend(risk_prob.cpu().tolist())
-            all_cat_labels.extend(batch.category_labels.int().tolist())
-            all_cat_logits.extend(cat_logits.cpu().tolist())
+            if num_categories > 0:
+                all_cat_labels.extend(batch.category_labels.int().tolist())
+                all_cat_logits.extend(cat_logits.cpu().tolist())
 
     return compute_metrics(
         all_risk_labels, all_risk_probs, all_cat_labels, all_cat_logits, num_categories
@@ -108,7 +136,7 @@ def train(args: argparse.Namespace) -> None:
         default_lang=args.lang,
     )
 
-    category_vocab = sorted({sample.category for sample in train_samples})
+    category_vocab = sorted({sample.category for sample in train_samples if sample.category})
     category_to_id = {cat: idx for idx, cat in enumerate(category_vocab)}
 
     train_loader = DataLoader(
@@ -134,9 +162,14 @@ def train(args: argparse.Namespace) -> None:
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr)
     risk_loss_fn = nn.BCEWithLogitsLoss()
-    cat_loss_fn = nn.CrossEntropyLoss(ignore_index=-1)
+    cat_loss_fn = None
+    cat_weight = 0.0
+    if category_vocab and args.cat_weight > 0:
+        cat_loss_fn = nn.CrossEntropyLoss(ignore_index=-1)
+        cat_weight = args.cat_weight
 
     best_score = -1.0
+    best_score_metric = "macro_f1"
     best_state: dict[str, torch.Tensor] = {}
     metrics_history: list[dict[str, Any]] = []
     patience_counter = 0
@@ -149,8 +182,10 @@ def train(args: argparse.Namespace) -> None:
             optimizer.zero_grad()
             risk_logit, cat_logits = model(batch)
             risk_loss = risk_loss_fn(risk_logit, batch.risk_labels)
-            cat_loss = cat_loss_fn(cat_logits, batch.category_labels)
-            loss = args.risk_weight * risk_loss + args.cat_weight * cat_loss
+            cat_loss = torch.tensor(0.0, device=device)
+            if cat_loss_fn is not None:
+                cat_loss = cat_loss_fn(cat_logits, batch.category_labels)
+            loss = args.risk_weight * risk_loss + cat_weight * cat_loss
             loss.backward()
             optimizer.step()
             total_loss += float(loss.item())
@@ -166,8 +201,16 @@ def train(args: argparse.Namespace) -> None:
         )
 
         score = val_metrics["macro_f1"]
+        score_metric = "macro_f1"
+        if not category_vocab:
+            score = val_metrics.get("risk_auroc", float("nan"))
+            score_metric = "risk_auroc"
+            if math.isnan(score):
+                score = val_metrics.get("risk_accuracy", 0.0)
+                score_metric = "risk_accuracy"
         if score > best_score:
             best_score = score
+            best_score_metric = score_metric
             best_state = {k: v.cpu() for k, v in model.state_dict().items()}
             patience_counter = 0
         else:
@@ -187,6 +230,7 @@ def train(args: argparse.Namespace) -> None:
         "layers": args.layers,
         "dropout": args.dropout,
         "created_at": datetime.utcnow().isoformat(),
+        "best_score_metric": best_score_metric,
     }
     torch.save(checkpoint, output_path)
 

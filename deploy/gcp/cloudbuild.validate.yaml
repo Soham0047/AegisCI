@@ -1,0 +1,18 @@
+substitutions:
+  _VALIDATOR_IMAGE: us-central1-docker.pkg.dev/$PROJECT_ID/securedev-registry/securedev-validator:latest
+  _PATCH_PATH: artifacts/patches/selected.diff
+  _COMMIT: HEAD
+
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - pull
+      - ${_VALIDATOR_IMAGE}
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: bash
+    args:
+      - -lc
+      - |
+        python -m pip install --upgrade pip
+        python -m pip install -e ".[dev]"
+        python validator/runner.py --repo . --commit ${_COMMIT} --patch ${_PATCH_PATH} --image ${_VALIDATOR_IMAGE} --dockerfile docker/validator.Dockerfile

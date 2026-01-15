@@ -57,6 +57,21 @@ class SimpleVocab:
         token_to_id = {token: idx for idx, token in enumerate(id_to_token)}
         return cls(token_to_id=token_to_id, id_to_token=id_to_token)
 
+    @classmethod
+    def from_dict(cls, data: dict) -> SimpleVocab:
+        """Reconstruct SimpleVocab from dict."""
+        token_to_id = data.get("token_to_id", {})
+        id_to_token = data.get("id_to_token", list(SPECIAL_TOKENS))
+        return cls(token_to_id=token_to_id, id_to_token=id_to_token)
+
+    def to_dict(self) -> dict:
+        """Serialize to dict for checkpoint saving."""
+        return {
+            "token_to_id": self.token_to_id,
+            "id_to_token": self.id_to_token,
+            "size": self.size,
+        }
+
     @property
     def size(self) -> int:
         return len(self.id_to_token)

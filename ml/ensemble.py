@@ -105,13 +105,17 @@ def train_stacker(features: torch.Tensor, labels: torch.Tensor, epochs: int = 10
 
 def _load_transformer(checkpoint_path: Path, device: torch.device):
     ckpt = torch.load(checkpoint_path, map_location=device, weights_only=False)
-    token_to_id = ckpt["vocab"]
+    vocab_data = ckpt.get("vocab", {})
+    if isinstance(vocab_data, dict) and "token_to_id" in vocab_data:
+        token_to_id = vocab_data["token_to_id"]
+    else:
+        token_to_id = vocab_data
     id_to_token = [None] * (max(token_to_id.values()) + 1)
     for token, idx in token_to_id.items():
         id_to_token[idx] = token
     vocab = SimpleVocab(token_to_id=token_to_id, id_to_token=id_to_token)
     model = build_model(
-        model_name=ckpt["model_name"],
+        model_name=ckpt.get("model_name", "small"),
         num_categories=len(ckpt["category_vocab"]),
         vocab_size=vocab.size,
         max_len=ckpt["max_len"],

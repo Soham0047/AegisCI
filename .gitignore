@@ -1,43 +1,118 @@
+# ===========================================
+# SecureDev Guardian - Production .gitignore
+# ===========================================
+
+# Python
 .venv/
+venv/
 __pycache__/
 *.pyc
 *.pyo
+*.pyd
 *.egg-info/
 dist/
 build/
+.eggs/
+*.egg
 .coverage
 .mypy_cache/
 .pytest_cache/
+htmlcov/
+.tox/
+
+# IDE
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+*.sublime-*
+
+# OS
 .DS_Store
-report.md
-report.json
-backend/data/
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node.js
 node_modules/
+npm-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Frontend build outputs
 frontend/.next/
 frontend/out/
 frontend/test-results/
+frontend/playwright-report/
+
+# Gateway build outputs
 gateway/dist/
-.env
+gateway/node_modules/
+
+# ===========================================
+# Data directories (test repos, outputs)
+# ===========================================
 data/repos/*
 !data/repos/.gitkeep
 data/tool_outputs/*
+!data/tool_outputs/.gitkeep
+
+# Datasets (can be regenerated)
 datasets/*
 !datasets/.gitkeep
+!datasets/gold/
+!datasets/weak_labels.jsonl
 
-# Artifacts - exclude temporary outputs
+# ===========================================
+# Artifacts - Temporary/Generated
+# ===========================================
 artifacts/jobs/
 artifacts/patch_v1/
 artifacts/gateway_events/
 artifacts/validation/
-artifacts/dl/
-artifacts/*.json
-artifacts/*.log
+artifacts/backup/
+artifacts/cloud_models/
+artifacts/cli_*/
+artifacts/demo_*/
+artifacts/models/
 
-# Keep trained models
-!artifacts/*.pt
+# Temporary reports and logs
+artifacts/*.log
+artifacts/pr_report*.json
+artifacts/graph_coverage_report.json
+artifacts/rag_store.db
+
+# ===========================================
+# ML Models - Use Git LFS for production
+# ===========================================
+# Production models are in artifacts/dl/
+# For repos >100MB, use Git LFS:
+#   git lfs install
+#   git lfs track "artifacts/dl/*.pt"
+
+# Keep manifest and metrics
+!artifacts/dl/enhanced_models_manifest.json
+!artifacts/dl/pipeline_results.json
+!artifacts/dl/metrics/
+!artifacts/dl/*_eval.json
+
+# ===========================================
+# Backend data
+# ===========================================
+backend/data/
 
 # RAG store (regenerated on demand)
 rag/store/*.sqlite
+rag/store/*.db
 
-# Large model files (use Git LFS or download separately)
-artifacts/*.pt
+# ===========================================
+# Root level temporary files
+# ===========================================
+report.md
+report.json
+report_test.md
+report_test.json
+*.log

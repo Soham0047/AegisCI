@@ -1,0 +1,173 @@
+{
+  "test": {
+    "risk": {
+      "accuracy": 0.9354275741710296,
+      "f1": 0.8121827411167513,
+      "confusion_matrix": [
+        [
+          456,
+          21
+        ],
+        [
+          16,
+          80
+        ]
+      ],
+      "tn": 456,
+      "fp": 21,
+      "fn": 16,
+      "tp": 80,
+      "auroc": 0.9809136967155834
+    },
+    "category": {
+      "per_class": {
+        "B608:hardcoded_sql_expressions": {
+          "precision": 0.017241379310344827,
+          "recall": 1.0,
+          "f1": 0.03389830508474576,
+          "support": 3
+        },
+        "B610:django_extra_used": {
+          "precision": 0.011834319526627219,
+          "recall": 1.0,
+          "f1": 0.023391812865497075,
+          "support": 2
+        },
+        "B611:django_rawsql_used": {
+          "precision": 0.005649717514124294,
+          "recall": 1.0,
+          "f1": 0.011235955056179775,
+          "support": 1
+        },
+        "PATTERN-JS-001": {
+          "precision": 0.008,
+          "recall": 0.5,
+          "f1": 0.015748031496062992,
+          "support": 2
+        },
+        "PATTERN-JS-004": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "PATTERN-JS-007": {
+          "precision": 0.06666666666666667,
+          "recall": 1.0,
+          "f1": 0.125,
+          "support": 11
+        },
+        "PATTERN-JS-008": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "PATTERN-JS-010": {
+          "precision": 0.037914691943127965,
+          "recall": 1.0,
+          "f1": 0.0730593607305936,
+          "support": 8
+        },
+        "PATTERN-JS-011": {
+          "precision": 0.015151515151515152,
+          "recall": 0.75,
+          "f1": 0.0297029702970297,
+          "support": 4
+        },
+        "PATTERN-JS-012": {
+          "precision": 0.03439153439153439,
+          "recall": 0.8666666666666667,
+          "f1": 0.06615776081424936,
+          "support": 15
+        },
+        "PATTERN-PY-007": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "PATTERN-PY-008": {
+          "precision": 0.005747126436781609,
+          "recall": 1.0,
+          "f1": 0.011428571428571429,
+          "support": 1
+        },
+        "PATTERN-PY-009": {
+          "precision": 0.03048780487804878,
+          "recall": 1.0,
+          "f1": 0.05917159763313609,
+          "support": 5
+        },
+        "PATTERN-PY-010": {
+          "precision": 0.7791411042944786,
+          "recall": 0.996078431372549,
+          "f1": 0.8743545611015491,
+          "support": 255
+        },
+        "PATTERN-PY-011": {
+          "precision": 0.012578616352201259,
+          "recall": 1.0,
+          "f1": 0.024844720496894408,
+          "support": 2
+        },
+        "PATTERN-PY-012": {
+          "precision": 0.0048543689320388345,
+          "recall": 1.0,
+          "f1": 0.00966183574879227,
+          "support": 1
+        },
+        "PATTERN-PY-014": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 1
+        },
+        "PATTERN-PY-015": {
+          "precision": 0.06532663316582915,
+          "recall": 1.0,
+          "f1": 0.12264150943396226,
+          "support": 13
+        },
+        "PATTERN-PY-016": {
+          "precision": 0.011363636363636364,
+          "recall": 1.0,
+          "f1": 0.02247191011235955,
+          "support": 2
+        },
+        "PATTERN-PY-018": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "code_injection": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "deserialization": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "sql_injection": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 0
+        },
+        "xss": {
+          "precision": 0.5,
+          "recall": 1.0,
+          "f1": 0.6666666666666666,
+          "support": 96
+        }
+      },
+      "macro_f1": 0.09039314870692876,
+      "micro_f1": 0.17239950269374224
+    }
+  }
+}

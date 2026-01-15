@@ -1,0 +1,11 @@
+# High-precision rule allowlist (supports * suffix for prefix match)
+PATTERN-PY-*
+PATTERN-JS-*
+secrets.hardcoded
+dependency.vuln
+B602*
+B605*
+B607*
+B608*
+B610*
+B611*

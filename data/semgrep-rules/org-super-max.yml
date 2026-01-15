@@ -1,0 +1,24 @@
+# Org "super-max" Semgrep rules template.
+# Add your custom rules here and point scans at this file with:
+#   guardian scan --semgrep-config data/semgrep-rules/org-super-max.yml
+#
+# You can also combine this with built-in packs by passing multiple configs,
+# e.g. run max pack plus your org rules:
+#   semgrep --config p/security-audit --config data/semgrep-rules/org-super-max.yml ...
+#
+# Keep rules focused and high-signal to avoid excessive noise.
+
+rules:
+  - id: org.super-max.python.eval
+    languages: [python]
+    message: "Avoid eval(); use ast.literal_eval or safe parsing."
+    severity: WARNING
+    patterns:
+      - pattern: eval(...)
+
+  - id: org.super-max.js.innerhtml
+    languages: [javascript, typescript]
+    message: "Avoid innerHTML with dynamic input; use textContent or safe templating."
+    severity: WARNING
+    patterns:
+      - pattern: $X.innerHTML = $Y

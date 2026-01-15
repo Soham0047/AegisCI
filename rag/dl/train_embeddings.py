@@ -93,7 +93,8 @@ def train_embeddings(args: argparse.Namespace) -> Path:
     model = DualEncoder(config)
     device = torch.device("cpu")
     model.to(device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
+    weight_decay = getattr(args, "weight_decay", 0.0)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=weight_decay)
 
     random.seed(args.seed)
     torch.manual_seed(args.seed)
@@ -141,19 +142,64 @@ def train_embeddings(args: argparse.Namespace) -> Path:
     return model_path
 
 
+def _env_int(name: str, default: int) -> int:
+    """Get integer from environment variable or return default."""
+    val = os.environ.get(name)
+    return int(val) if val else default
+
+
+def _env_float(name: str, default: float) -> float:
+    """Get float from environment variable or return default."""
+    val = os.environ.get(name)
+    return float(val) if val else default
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Train a dual-encoder embeddings model.")
     parser.add_argument("--pairs", default="artifacts/dl/pairs.jsonl")
     parser.add_argument("--out-dir", default=os.environ.get("DL_ARTIFACTS_DIR", "artifacts/dl"))
-    parser.add_argument("--epochs", type=int, default=1)
-    parser.add_argument("--batch-size", type=int, default=16)
-    parser.add_argument("--lr", type=float, default=1e-3)
-    parser.add_argument("--seed", type=int, default=1337)
+    # Improved hyperparameters: lower LR, more epochs for better convergence
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=_env_int("DL_EPOCHS", 10),
+        help="Number of training epochs (env: DL_EPOCHS)",
+    )
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=_env_int("DL_BATCH_SIZE", 16),
+        help="Batch size (env: DL_BATCH_SIZE)",
+    )
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=_env_float("DL_LR", 5e-4),
+        help="Learning rate (env: DL_LR) - lower default for stability",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=_env_int("DL_SEED", 1337),
+        help="Random seed for reproducibility (env: DL_SEED)",
+    )
     parser.add_argument("--embed-dim", type=int, default=64)
     parser.add_argument("--hidden-dim", type=int, default=96)
     parser.add_argument("--max-len", type=int, default=96)
     parser.add_argument("--vocab-size", type=int, default=5000)
     parser.add_argument("--max-pairs", type=int, default=200)
+    parser.add_argument(
+        "--warmup-steps",
+        type=int,
+        default=_env_int("DL_WARMUP_STEPS", 100),
+        help="Learning rate warmup steps (env: DL_WARMUP_STEPS)",
+    )
+    parser.add_argument(
+        "--weight-decay",
+        type=float,
+        default=_env_float("DL_WEIGHT_DECAY", 0.01),
+        help="Weight decay for regularization (env: DL_WEIGHT_DECAY)",
+    )
     return parser
 
 
