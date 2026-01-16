@@ -5,7 +5,7 @@
 # One-command setup for new users
 #
 # Usage:
-#   curl -sSL https://raw.githubusercontent.com/YOUR_USERNAME/securedev-guardian/main/scripts/quickstart.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/Soham0047/AegisCI/main/scripts/quickstart.sh | bash
 #   OR
 #   ./scripts/quickstart.sh
 #
@@ -187,7 +187,7 @@ print_success() {
     echo "   # See all options"
     echo "   guardian --help"
     echo ""
-    echo -e "${CYAN}📚 Documentation:${NC} https://github.com/YOUR_USERNAME/securedev-guardian"
+    echo -e "${CYAN}📚 Documentation:${NC} https://github.com/Soham0047/AegisCI"
     echo ""
 }
 

@@ -2,7 +2,7 @@
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![CI](https://github.com/YOUR_USERNAME/securedev-guardian/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/securedev-guardian/actions)
+[![CI](https://github.com/Soham0047/AegisCI/actions/workflows/ci.yml/badge.svg)](https://github.com/Soham0047/AegisCI/actions)
 
 An **AI-powered Security Scanner CLI** for Python + JS/TS codebases with automated vulnerability detection, ML-based risk scoring, and patching recommendations.
 
@@ -12,7 +12,7 @@ An **AI-powered Security Scanner CLI** for Python + JS/TS codebases with automat
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/securedev-guardian.git
+git clone https://github.com/Soham0047/AegisCI.git
 cd securedev-guardian
 
 # Run the quick start script
@@ -23,7 +23,7 @@ cd securedev-guardian
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/securedev-guardian.git
+git clone https://github.com/Soham0047/AegisCI.git
 cd securedev-guardian
 
 # Pull Git LFS files (ML models)
@@ -516,12 +516,12 @@ MIT
 
 Users can install directly from GitHub:
 ```bash
-pip install git+https://github.com/yourusername/securedev-guardian.git
+pip install git+https://github.com/Soham0047/AegisCI.git
 ```
 
 Or clone and install locally:
 ```bash
-git clone https://github.com/yourusername/securedev-guardian.git
+git clone https://github.com/Soham0047/AegisCI.git
 cd securedev-guardian
 pip install -e .
 guardian --help

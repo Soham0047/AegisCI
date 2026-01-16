@@ -14,7 +14,7 @@ Thank you for your interest in contributing! This document provides guidelines f
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/securedev-guardian.git
+   git clone https://github.com/Soham0047/AegisCI.git
    cd securedev-guardian
    ```
 

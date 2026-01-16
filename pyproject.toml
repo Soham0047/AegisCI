@@ -51,11 +51,11 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yourusername/securedev-guardian"
-Documentation = "https://github.com/yourusername/securedev-guardian#readme"
-Repository = "https://github.com/yourusername/securedev-guardian.git"
-Issues = "https://github.com/yourusername/securedev-guardian/issues"
-Changelog = "https://github.com/yourusername/securedev-guardian/releases"
+Homepage = "https://github.com/Soham0047/AegisCI"
+Documentation = "https://github.com/Soham0047/AegisCI#readme"
+Repository = "https://github.com/Soham0047/AegisCI.git"
+Issues = "https://github.com/Soham0047/AegisCI/issues"
+Changelog = "https://github.com/Soham0047/AegisCI/releases"
 
 [project.optional-dependencies]
 dev = [
