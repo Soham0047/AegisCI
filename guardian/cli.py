@@ -33,6 +33,7 @@ from typing import Annotated, Optional
 
 # Load environment variables from .env file
 from dotenv import load_dotenv
+
 load_dotenv(Path(__file__).parent.parent / ".env")
 
 import typer
@@ -98,12 +99,14 @@ from guardian.ui import (
 # ML inference engine (lazy import for performance)
 _ml_engine = None
 
+
 def _get_ml_engine():
     """Lazy-load ML inference engine."""
     global _ml_engine
     if _ml_engine is None:
         try:
             from ml.inference import EnhancedInferenceEngine
+
             _ml_engine = EnhancedInferenceEngine()
             if not _ml_engine.is_available:
                 _ml_engine = None
@@ -116,6 +119,7 @@ def _enhance_findings_with_ml(findings: list):
     """Enhance findings with ML predictions."""
     try:
         from ml.inference import enhance_findings_with_ml
+
         return enhance_findings_with_ml(findings)
     except ImportError:
         return findings
@@ -134,9 +138,7 @@ app = typer.Typer(
 def version_callback(value: bool) -> None:
     """Show version and exit."""
     if value:
-        console.print(
-            f"[bold blue]{__app_name__}[/bold blue] version [green]{__version__}[/green]"
-        )
+        console.print(f"[bold blue]{__app_name__}[/bold blue] version [green]{__version__}[/green]")
         raise typer.Exit()
 
 
@@ -210,7 +212,7 @@ def _print_summary_table(
     """Print a visual summary dashboard of scan results."""
     severity_counts = _count_by_severity(findings)
     total = len(findings)
-    
+
     # Count patches if available
     patches = sum(1 for f in findings if f.get("patch_suggestions"))
 
@@ -227,7 +229,7 @@ def _print_summary_table(
         scan_time_ms=scan_time_ms,
     )
     console.print(dashboard)
-    
+
     # Print scanner breakdown
     if scanner_stats:
         print_scanner_status(scanner_stats)
@@ -440,7 +442,7 @@ def scan(
 
         # Track timing
         start_time = time.time()
-        
+
         # Get files to scan
         if full:
             if not quiet:
@@ -477,17 +479,19 @@ def scan(
         if not quiet and not json_output:
             scope_label = f"full scan: {target}" if full else f"diff vs {base_ref}"
             print_banner(f"Scanning {len(changed)} files ({scope_label})")
-            
+
             # Show configuration
             llm_provider = os.environ.get("PATCH_LLM_PROVIDER", "local")
-            print_scan_config(ScanConfig(
-                targets=[str(target)] if full else ["."],
-                scanners=scanners_enabled,
-                base_ref=None if full else base_ref,
-                ml_enabled=ml_enhance,
-                rag_enabled=False,
-                llm_provider=llm_provider,
-            ))
+            print_scan_config(
+                ScanConfig(
+                    targets=[str(target)] if full else ["."],
+                    scanners=scanners_enabled,
+                    base_ref=None if full else base_ref,
+                    ml_enabled=ml_enhance,
+                    rag_enabled=False,
+                    llm_provider=llm_provider,
+                )
+            )
 
         if verbose and not json_output:
             print_subheader("Changed Files", Icons.FILE)
@@ -583,45 +587,51 @@ def scan(
 
         # Process secrets findings
         for result in secrets_json.get("results", []):
-            additional_findings.append({
-                "severity": result.get("extra", {}).get("severity", "high").lower(),
-                "rule": {
-                    "rule_id": result.get("check_id", "secrets"),
-                    "name": result.get("check_name", "Secret detected"),
-                },
-                "location": {
-                    "filepath": result.get("path", ""),
-                    "start_line": result.get("start", {}).get("line", 0),
-                },
-            })
+            additional_findings.append(
+                {
+                    "severity": result.get("extra", {}).get("severity", "high").lower(),
+                    "rule": {
+                        "rule_id": result.get("check_id", "secrets"),
+                        "name": result.get("check_name", "Secret detected"),
+                    },
+                    "location": {
+                        "filepath": result.get("path", ""),
+                        "start_line": result.get("start", {}).get("line", 0),
+                    },
+                }
+            )
 
         # Process pattern findings
         for result in patterns_json.get("results", []):
-            additional_findings.append({
-                "severity": result.get("extra", {}).get("severity", "medium").lower(),
-                "rule": {
-                    "rule_id": result.get("check_id", "pattern"),
-                    "name": result.get("check_name", "Dangerous pattern"),
-                },
-                "location": {
-                    "filepath": result.get("path", ""),
-                    "start_line": result.get("start", {}).get("line", 0),
-                },
-            })
+            additional_findings.append(
+                {
+                    "severity": result.get("extra", {}).get("severity", "medium").lower(),
+                    "rule": {
+                        "rule_id": result.get("check_id", "pattern"),
+                        "name": result.get("check_name", "Dangerous pattern"),
+                    },
+                    "location": {
+                        "filepath": result.get("path", ""),
+                        "start_line": result.get("start", {}).get("line", 0),
+                    },
+                }
+            )
 
         # Process dependency findings
         for result in deps_json.get("results", []):
-            additional_findings.append({
-                "severity": result.get("extra", {}).get("severity", "high").lower(),
-                "rule": {
-                    "rule_id": result.get("check_id", "dependency"),
-                    "name": result.get("check_name", "Vulnerable dependency"),
-                },
-                "location": {
-                    "filepath": result.get("path", ""),
-                    "start_line": result.get("start", {}).get("line", 0),
-                },
-            })
+            additional_findings.append(
+                {
+                    "severity": result.get("extra", {}).get("severity", "high").lower(),
+                    "rule": {
+                        "rule_id": result.get("check_id", "dependency"),
+                        "name": result.get("check_name", "Vulnerable dependency"),
+                    },
+                    "location": {
+                        "filepath": result.get("path", ""),
+                        "start_line": result.get("start", {}).get("line", 0),
+                    },
+                }
+            )
 
         # Combine findings
         all_findings = report_json.get("findings", []) + additional_findings
@@ -634,7 +644,9 @@ def scan(
                     console.print("[cyan]Enhancing findings with ML...[/cyan]")
                 all_findings = _enhance_findings_with_ml(all_findings)
                 if verbose:
-                    ml_enhanced_count = sum(1 for f in all_findings if f.get("ml_risk_score") is not None)
+                    ml_enhanced_count = sum(
+                        1 for f in all_findings if f.get("ml_risk_score") is not None
+                    )
                     console.print(f"  ML enhanced {ml_enhanced_count} findings")
             elif verbose:
                 console.print("[yellow]ML engine not available, skipping enhancement[/yellow]")
@@ -665,7 +677,7 @@ def scan(
         }
 
         findings = all_findings
-        
+
         # Calculate timing
         elapsed_ms = int((time.time() - start_time) * 1000)
 
@@ -735,6 +747,7 @@ def scan(
         print_error(f"Error: {e}")
         if verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(EXIT_ERROR)
 
@@ -820,9 +833,7 @@ def ingest(
         try:
             import subprocess
 
-            commit_sha = (
-                subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
-            )
+            commit_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
         except Exception:
             commit_sha = "WORKDIR"
 
@@ -955,8 +966,8 @@ def config(
     cfg = Config().load()
 
     table = Table(
-        title=f"{Icons.GEAR} Current Configuration", 
-        show_header=True, 
+        title=f"{Icons.GEAR} Current Configuration",
+        show_header=True,
         header_style="bold cyan",
         border_style="dim",
     )
@@ -972,7 +983,7 @@ def config(
         table.add_row(key, str(value), source if key != "color" else "auto")
 
     console.print(table)
-    
+
     # Show environment variables
     console.print()
     print_subheader("Environment Variables", Icons.KEY)
@@ -1061,26 +1072,28 @@ def train(
     """
     try:
         from ml.train_pipeline import TrainingPipeline
-        
+
         target_list = [Path(t.strip()) for t in targets.split(",")]
-        
-        console.print(Panel(
-            "[bold blue]SecureDev Guardian ML Training[/bold blue]\n\n"
-            f"Targets: {', '.join(target_list)}\n"
-            f"Epochs: {epochs}\n"
-            f"Batch Size: {batch_size}\n"
-            f"Output: {output_dir}",
-            title="Training Configuration",
-            border_style="blue",
-        ))
-        
+
+        console.print(
+            Panel(
+                "[bold blue]SecureDev Guardian ML Training[/bold blue]\n\n"
+                f"Targets: {', '.join(target_list)}\n"
+                f"Epochs: {epochs}\n"
+                f"Batch Size: {batch_size}\n"
+                f"Output: {output_dir}",
+                title="Training Configuration",
+                border_style="blue",
+            )
+        )
+
         with Progress(
             SpinnerColumn(),
             TextColumn("[progress.description]{task.description}"),
             console=console,
         ) as progress:
             task = progress.add_task(f"{Icons.GEAR} Initializing training pipeline...", total=None)
-            
+
             # Create and run pipeline
             pipeline = TrainingPipeline(
                 targets=target_list,
@@ -1089,40 +1102,42 @@ def train(
                 batch_size=batch_size,
                 skip_scan=skip_scan,
             )
-            
+
             progress.update(task, description=f"{Icons.BRAIN} Running training pipeline...")
             results = pipeline.run()
-        
+
         # Show results
         console.print()
         print_success("Training Complete!", Icons.ROCKET)
         console.print()
-        
+
         table = Table(
-            title=f"{Icons.CHART} Training Results", 
-            show_header=True, 
+            title=f"{Icons.CHART} Training Results",
+            show_header=True,
             header_style="bold cyan",
             border_style="green",
         )
         table.add_column("Step", style="cyan")
         table.add_column("Status", justify="center")
         table.add_column("Details", style="dim")
-        
+
         for step, details in results.get("steps", {}).items():
-            status_icon = f"[green]{Icons.CHECK}[/green]" if details.get("success") else f"[red]{Icons.CROSS}[/red]"
-            table.add_row(
-                step.replace("_", " ").title(),
-                status_icon,
-                str(details.get("message", ""))[:50]
+            status_icon = (
+                f"[green]{Icons.CHECK}[/green]"
+                if details.get("success")
+                else f"[red]{Icons.CROSS}[/red]"
             )
-        
+            table.add_row(
+                step.replace("_", " ").title(), status_icon, str(details.get("message", ""))[:50]
+            )
+
         console.print(table)
-        
+
         if results.get("models_exported"):
             print_success(f"Models exported to: {output_dir}", Icons.FOLDER)
-        
+
         sys.exit(EXIT_SUCCESS)
-        
+
     except ImportError as e:
         print_error(f"ML training modules not available: {e}")
         print_muted("Make sure PyTorch and training dependencies are installed.")
@@ -1131,6 +1146,7 @@ def train(
         print_error(f"Training failed: {e}")
         if verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(EXIT_ERROR)
 
@@ -1259,13 +1275,15 @@ def pipeline(
         datasets_dir = output_dir / "datasets"
 
         print_banner("End-to-End ML Pipeline (Full Rebuild)")
-        print_scan_config(ScanConfig(
-            targets=[str(repos_dir)],
-            scanners=["Bandit", "Semgrep"],
-            ml_enabled=True,
-            rag_enabled=False,
-            llm_provider=os.environ.get("PATCH_LLM_PROVIDER", "local"),
-        ))
+        print_scan_config(
+            ScanConfig(
+                targets=[str(repos_dir)],
+                scanners=["Bandit", "Semgrep"],
+                ml_enabled=True,
+                rag_enabled=False,
+                llm_provider=os.environ.get("PATCH_LLM_PROVIDER", "local"),
+            )
+        )
 
         # Step 1: Build datasets (weak -> gold -> splits)
         print_subheader("Step 1/2: Data Pipeline", Icons.CHART)
@@ -1310,6 +1328,7 @@ def pipeline(
         print_error(f"Pipeline failed: {e}")
         if verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(EXIT_ERROR)
 
@@ -1331,7 +1350,7 @@ def check(
     Verifies that Bandit, Semgrep, and Git are available.
     """
     import subprocess
-    
+
     print_banner("System Health Check")
 
     tools = [
@@ -1342,7 +1361,7 @@ def check(
     ]
 
     all_ok = True
-    
+
     # Create status table
     table = Table(
         title=f"{Icons.GEAR} Tool Status",
@@ -1398,7 +1417,7 @@ def check(
 
     console.print(table)
     console.print()
-    
+
     # Check ML components
     print_subheader("ML Components", Icons.BRAIN)
     ml_components = [
@@ -1406,14 +1425,14 @@ def check(
         ("RAG Retriever", "rag.retriever"),
         ("ML Inference", "ml.inference"),
     ]
-    
+
     for name, module in ml_components:
         try:
             __import__(module)
             print_success(f"{name}: available", icon="")
         except ImportError:
             print_muted(f"  {name}: not available")
-    
+
     console.print()
 
     if all_ok:
@@ -1495,71 +1514,77 @@ def analyze(
 
     targets = targets or [Path(".")]
     target_strs = [str(t) for t in targets]
-    
+
     # Track timing
     start_time = time.time()
-    
+
     if not json_output:
         print_banner("Integrated ML + RAG + LLM Analysis")
-        
+
         llm_provider = os.environ.get("PATCH_LLM_PROVIDER", "local")
-        print_scan_config(ScanConfig(
-            targets=target_strs,
-            scanners=["Bandit", "Semgrep"],
-            ml_enabled=True,
-            rag_enabled=True,
-            llm_provider=llm_provider,
-        ))
+        print_scan_config(
+            ScanConfig(
+                targets=target_strs,
+                scanners=["Bandit", "Semgrep"],
+                ml_enabled=True,
+                rag_enabled=True,
+                llm_provider=llm_provider,
+            )
+        )
 
     try:
         with create_scan_progress() as progress:
             # Run scanners
             task = progress.add_task(f"{Icons.SEARCH} Running security scanners...", total=4)
-            
+
             all_findings = []
             for target in targets:
                 if target.exists():
                     # Convert to string and check if directory
                     target_str = str(target)
                     is_dir = target.is_dir()
-                    
+
                     # Bandit returns dict with 'results' key
                     bandit_output = run_bandit([target_str], recursive=is_dir)
                     if isinstance(bandit_output, dict):
                         bandit_findings = bandit_output.get("results", [])
                     else:
                         bandit_findings = bandit_output if isinstance(bandit_output, list) else []
-                    
-                    # Semgrep returns dict with 'results' key  
+
+                    # Semgrep returns dict with 'results' key
                     semgrep_output = run_semgrep([target])
                     if isinstance(semgrep_output, dict):
                         semgrep_findings = semgrep_output.get("results", [])
                     else:
-                        semgrep_findings = semgrep_output if isinstance(semgrep_output, list) else []
-                    
+                        semgrep_findings = (
+                            semgrep_output if isinstance(semgrep_output, list) else []
+                        )
+
                     all_findings.extend(bandit_findings)
                     all_findings.extend(semgrep_findings)
-            
-            progress.update(task, advance=1, description=f"{Icons.CHECK} Found {len(all_findings)} findings")
-            
+
+            progress.update(
+                task, advance=1, description=f"{Icons.CHECK} Found {len(all_findings)} findings"
+            )
+
             # Run integrated analysis
             progress.update(task, description=f"{Icons.BRAIN} Analyzing with ML...")
-            
+
             pipeline = IntegratedPipeline()
             progress.update(task, advance=1)
-            
+
             progress.update(task, description=f"{Icons.BOOK} Retrieving from knowledge base...")
             analyzed = pipeline.analyze_batch(
                 all_findings,
                 generate_patches=not no_patches,
             )
             progress.update(task, advance=1)
-            
+
             # Generate report
             progress.update(task, description=f"{Icons.FILE} Generating report...")
             report = pipeline.generate_report(analyzed, format=format_type)
             progress.update(task, advance=1, description=f"{Icons.CHECK} Analysis complete")
-        
+
         # Calculate timing
         elapsed_ms = int((time.time() - start_time) * 1000)
 
@@ -1572,9 +1597,10 @@ def analyze(
         else:
             # Print summary dashboard
             import json as json_module
+
             data = json_module.loads(pipeline.generate_report(analyzed, format="json"))
             summary = data["summary"]
-            
+
             console.print()
             dashboard = create_summary_dashboard(
                 total_findings=summary["total_findings"],
@@ -1585,38 +1611,51 @@ def analyze(
                 scan_time_ms=elapsed_ms,
             )
             console.print(dashboard)
-            
+
             # Show findings table
             if analyzed:
                 # Convert to dict format for display
                 findings_for_display = []
                 for f in sorted(analyzed, key=lambda x: -x.ml_risk_score):
-                    findings_for_display.append({
-                        "category": f.category,
-                        "ml_risk_score": f.ml_risk_score,
-                        "file_path": f.file_path,
-                        "line_start": f.line_start,
-                        "message": f"{f.category} - {f.ml_risk_label}",
-                        "code": f.code_snippet[:100] if f.code_snippet else "",
-                        "severity": "high" if f.ml_risk_score > 0.7 else "medium" if f.ml_risk_score > 0.4 else "low",
-                        "patch_suggestions": [{"source": p.source, "confidence": p.confidence} for p in f.patch_suggestions] if f.patch_suggestions else [],
-                    })
-                
+                    findings_for_display.append(
+                        {
+                            "category": f.category,
+                            "ml_risk_score": f.ml_risk_score,
+                            "file_path": f.file_path,
+                            "line_start": f.line_start,
+                            "message": f"{f.category} - {f.ml_risk_label}",
+                            "code": f.code_snippet[:100] if f.code_snippet else "",
+                            "severity": "high"
+                            if f.ml_risk_score > 0.7
+                            else "medium"
+                            if f.ml_risk_score > 0.4
+                            else "low",
+                            "patch_suggestions": [
+                                {"source": p.source, "confidence": p.confidence}
+                                for p in f.patch_suggestions
+                            ]
+                            if f.patch_suggestions
+                            else [],
+                        }
+                    )
+
                 console.print()
-                print_findings_table(findings_for_display, title="ML-Analyzed Findings", max_items=10)
-                
+                print_findings_table(
+                    findings_for_display, title="ML-Analyzed Findings", max_items=10
+                )
+
                 # Show patches
                 patches_available = [f for f in analyzed if f.patch_suggestions]
                 if patches_available:
                     console.print()
                     print_patches_summary(findings_for_display)
-                
+
                 if verbose:
                     # Show detailed view for top findings
                     print_header("Detailed Analysis", Icons.SEARCH)
                     for i, f in enumerate(findings_for_display[:3], 1):
                         print_finding_detail(f, i)
-            
+
             # Print completion message
             print_analysis_complete(
                 high_risk=summary["high_risk"],
@@ -1627,6 +1666,7 @@ def analyze(
         print_error(f"Analysis failed: {e}")
         if verbose:
             import traceback
+
             traceback.print_exc()
         sys.exit(EXIT_ERROR)
 
@@ -1712,13 +1752,15 @@ def patch(
             sys.exit(EXIT_ERROR)
 
     print_banner("Patch Generation & Validation")
-    print_scan_config(ScanConfig(
-        targets=[str(repo_root)],
-        scanners=["Deterministic", "LLM"],
-        ml_enabled=True,
-        rag_enabled=True,
-        llm_provider=os.environ.get("PATCH_LLM_PROVIDER", "local"),
-    ))
+    print_scan_config(
+        ScanConfig(
+            targets=[str(repo_root)],
+            scanners=["Deterministic", "LLM"],
+            ml_enabled=True,
+            rag_enabled=True,
+            llm_provider=os.environ.get("PATCH_LLM_PROVIDER", "local"),
+        )
+    )
 
     result = run_orchestrator(
         repo_root=repo_root,
@@ -1738,7 +1780,10 @@ def patch(
             continue
 
         finding_dir = Path("artifacts/patch_v1") / run_id / item["finding_id"]
-        candidate_path = finding_dir / f"candidate_{'det' if selected.startswith('det') else selected.split('-')[-1]}.diff"
+        candidate_path = (
+            finding_dir
+            / f"candidate_{'det' if selected.startswith('det') else selected.split('-')[-1]}.diff"
+        )
         if not candidate_path.exists():
             print_warning(f"Selected diff not found: {candidate_path}")
             continue
@@ -1749,6 +1794,7 @@ def patch(
 
         if verbose:
             print_patch_diff(candidate_path.read_text(encoding="utf-8"))
+
 
 # For backwards compatibility with old --base-ref syntax
 @app.callback(invoke_without_command=True)

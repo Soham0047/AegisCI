@@ -39,7 +39,7 @@ if str(ROOT) not in sys.path:
 @dataclass
 class ScanFinding:
     """A finding from a security scanner."""
-    
+
     scanner: str
     file_path: str
     line_start: int
@@ -50,7 +50,7 @@ class ScanFinding:
     message: str
     code_snippet: str
     rule_id: str = ""
-    
+
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
@@ -58,7 +58,7 @@ class ScanFinding:
 @dataclass
 class GoldSample:
     """A labeled sample for training."""
-    
+
     sample_id: str
     code: str
     tokens: list[str]
@@ -73,14 +73,14 @@ class GoldSample:
     line_start: int
     line_end: int
     features: dict[str, Any] = field(default_factory=dict)
-    
+
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
 class MultiScanner:
     """Run multiple security scanners and aggregate results."""
-    
+
     SCANNERS = ["bandit", "semgrep", "secrets", "patterns", "dependencies"]
     SKIP_DIRS = {
         ".git",
@@ -96,7 +96,7 @@ class MultiScanner:
         ".next",
         "coverage",
     }
-    
+
     def __init__(
         self,
         verbose: bool = True,
@@ -150,7 +150,7 @@ class MultiScanner:
 
             filtered.append(finding)
         return filtered
-    
+
     def _check_scanners(self) -> None:
         """Check which scanners are available."""
         self.available_scanners = []
@@ -168,13 +168,11 @@ class MultiScanner:
             except (subprocess.TimeoutExpired, FileNotFoundError):
                 pass
         # Internal scanners are always available
-        self.available_scanners.extend(
-            [s for s in self.SCANNERS if s not in cli_scanners]
-        )
-        
+        self.available_scanners.extend([s for s in self.SCANNERS if s not in cli_scanners])
+
         if self.verbose:
             print(f"Available scanners: {self.available_scanners}")
-    
+
     def scan_directory(
         self,
         directory: Path,
@@ -202,14 +200,15 @@ class MultiScanner:
                 findings.extend(self._run_patterns(files))
             elif scanner == "dependencies":
                 findings.extend(self._run_dependencies(directory))
-        
+
         return self._filter_findings(findings)
-    
+
     def _run_bandit(self, py_files: list[str]) -> list[ScanFinding]:
         """Run Bandit scanner."""
         findings = []
         try:
             from guardian.scanners.bandit_scanner import run_bandit
+
             if not py_files:
                 return []
 
@@ -238,9 +237,9 @@ class MultiScanner:
         except (subprocess.TimeoutExpired, json.JSONDecodeError, Exception) as e:
             if self.verbose:
                 print(f"  Bandit error: {e}")
-        
+
         return findings
-    
+
     def _run_semgrep(self, files: list[str]) -> list[ScanFinding]:
         """Run Semgrep scanner."""
         findings = []
@@ -250,6 +249,7 @@ class MultiScanner:
                 run_semgrep_comprehensive,
                 run_semgrep_max,
             )
+
             if not files:
                 return []
 
@@ -304,7 +304,7 @@ class MultiScanner:
         except (subprocess.TimeoutExpired, json.JSONDecodeError, Exception) as e:
             if self.verbose:
                 print(f"  Semgrep error: {e}")
-        
+
         return findings
 
     def _run_secrets(self, files: list[str]) -> list[ScanFinding]:
@@ -415,7 +415,7 @@ class MultiScanner:
     @staticmethod
     def _chunked(items: list[str], size: int) -> list[list[str]]:
         return [items[i : i + size] for i in range(0, len(items), size)]
-    
+
     def _read_code_snippet(self, file_path: Path, start: int, end: int, context: int = 3) -> str:
         """Read code snippet from file (raw, without line numbers for parseability)."""
         try:
@@ -425,7 +425,7 @@ class MultiScanner:
             return "\n".join(lines[start_idx:end_idx])
         except Exception:
             return ""
-    
+
     def _read_code_snippet_with_lines(
         self,
         file_path: Path,
@@ -448,7 +448,7 @@ class MultiScanner:
 
 class GoldLabelGenerator:
     """Generate gold labels from scanner findings using heuristics."""
-    
+
     # High-confidence vulnerability patterns
     HIGH_CONFIDENCE_PATTERNS = [
         (r"subprocess\.\w+\([^)]*shell\s*=\s*True", "command_injection"),
@@ -461,16 +461,16 @@ class GoldLabelGenerator:
         (r"innerHTML\s*=", "xss"),
         (r"document\.write\s*\(", "xss"),
     ]
-    
+
     # Patterns that are often false positives
     FALSE_POSITIVE_PATTERNS = [
         r"#\s*nosec",  # Explicitly marked as safe
-        r"#\s*noqa",   # Linter ignore
-        r"test_\w+",   # Test files
-        r"mock\.",     # Mock objects
+        r"#\s*noqa",  # Linter ignore
+        r"test_\w+",  # Test files
+        r"mock\.",  # Mock objects
         r"assert\s+",  # Assertions in tests
     ]
-    
+
     def __init__(
         self,
         seed: int = 42,
@@ -514,7 +514,7 @@ class GoldLabelGenerator:
             if self._matches_allowlist(candidate, self.rule_allowlist):
                 return True
         return False
-    
+
     def generate_gold_labels(
         self,
         findings: list[ScanFinding],
@@ -522,31 +522,31 @@ class GoldLabelGenerator:
     ) -> list[GoldSample]:
         """
         Generate gold-labeled samples from findings and safe code.
-        
+
         Args:
             findings: Scanner findings (potentially vulnerable)
             safe_code_samples: Known safe code samples
-        
+
         Returns:
             List of gold-labeled samples
         """
         samples = []
-        
+
         # Process findings - determine if truly vulnerable or false positive
         finding_groups = self._group_findings(findings)
-        
+
         for key, group in finding_groups.items():
             group_samples = self._create_samples_from_findings(group)
             samples.extend(group_samples)
-        
+
         # Add safe code samples
         for code, file_path, category in safe_code_samples:
             sample = self._create_safe_sample(code, file_path, category)
             if sample:
                 samples.append(sample)
-        
+
         return samples
-    
+
     def _group_findings(self, findings: list[ScanFinding]) -> dict[str, list[ScanFinding]]:
         """Group findings by file+line for consensus."""
         groups = defaultdict(list)
@@ -554,7 +554,7 @@ class GoldLabelGenerator:
             key = f"{f.file_path}:{f.line_start}-{f.line_end}"
             groups[key].append(f)
         return groups
-    
+
     def _read_code_snippet(self, file_path: Path, start: int, end: int, context: int) -> str:
         try:
             lines = file_path.read_text(encoding="utf-8", errors="ignore").split("\n")
@@ -568,7 +568,7 @@ class GoldLabelGenerator:
         """Create labeled samples from a group of findings."""
         if not findings:
             return []
-        
+
         f = findings[0]
         snippets: list[tuple[str, int]] = []
         if f.file_path:
@@ -582,26 +582,26 @@ class GoldLabelGenerator:
             snippets.append((f.code_snippet, -1))
         if not snippets:
             return []
-        
+
         # Calculate consensus score
         scanner_sources = list(set(f.scanner for f in findings))
         consensus_score = len(scanner_sources) / len(MultiScanner.SCANNERS)
-        
+
         # Determine severity (highest among findings)
         severity_order = {"HIGH": 3, "MEDIUM": 2, "LOW": 1}
         max_severity = max(findings, key=lambda x: severity_order.get(x.severity, 0))
-        
+
         # Determine if true positive or false positive
         # Determine if true positive or false positive from the first snippet
         is_tp, detected_category = self._classify_finding(snippets[0][0], findings)
-        
+
         # Use detected category or scanner category (only for true positives)
         category = detected_category or f.rule_id or f.category
         if not is_tp:
             category = ""
         elif category and not self._category_allowed(category, f.rule_id):
             category = ""
-        
+
         # Generate sample ID
         samples: list[GoldSample] = []
         for code, ctx in snippets:
@@ -631,21 +631,19 @@ class GoldLabelGenerator:
                 )
             )
         return samples
-    
+
     def _create_safe_sample(self, code: str, file_path: str, category: str) -> GoldSample | None:
         """Create a safe (FP) sample from clean code."""
         if not code or len(code.strip()) < 10:
             return None
-        
-        sample_id = hashlib.sha256(
-            f"safe:{file_path}:{code[:100]}".encode()
-        ).hexdigest()
-        
+
+        sample_id = hashlib.sha256(f"safe:{file_path}:{code[:100]}".encode()).hexdigest()
+
         tokens = self._tokenize(code)
         features = self._extract_features(code)
         if category:
             features["safe_category"] = category
-        
+
         return GoldSample(
             sample_id=sample_id,
             code=code,
@@ -662,11 +660,11 @@ class GoldLabelGenerator:
             line_end=code.count("\n") + 1,
             features=features,
         )
-    
+
     def _classify_finding(self, code: str, findings: list[ScanFinding]) -> tuple[bool, str | None]:
         """
         Classify if a finding is a true positive.
-        
+
         Returns:
             (is_true_positive, detected_category)
         """
@@ -674,12 +672,12 @@ class GoldLabelGenerator:
         for pattern in self._compiled_fp:
             if pattern.search(code):
                 return False, None
-        
+
         # Check for high-confidence vulnerability patterns
         for pattern, category in self._compiled_hp:
             if pattern.search(code):
                 return True, category
-        
+
         # Use scanner consensus and severity
         scanner_count = len(set(f.scanner for f in findings))
         severity_rank = {"LOW": 1, "MEDIUM": 2, "HIGH": 3}
@@ -723,14 +721,14 @@ class GoldLabelGenerator:
 
         if has_high_severity and has_high_confidence:
             return True, None
-        
+
         # Default to false positive for low confidence findings
         return False, None
-    
+
     def _tokenize(self, code: str) -> list[str]:
         """Tokenize code."""
-        return re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[^\s\w]', code)[:512]
-    
+        return re.findall(r"[a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[^\s\w]", code)[:512]
+
     def _extract_features(self, code: str) -> dict[str, Any]:
         """Extract features for the sample."""
         lines = code.split("\n")
@@ -808,9 +806,9 @@ class CouncilGoldLabeler(GoldLabelGenerator):
                 if detected_category is None:
                     detected_category = rule_id
         for category in categories:
-            if self._matches_allowlist(category, self.category_allowlist) or self._matches_allowlist(
-                category, self.rule_allowlist
-            ):
+            if self._matches_allowlist(
+                category, self.category_allowlist
+            ) or self._matches_allowlist(category, self.rule_allowlist):
                 tp_votes += 2
                 if detected_category is None:
                     detected_category = category.split(":", 1)[0] if ":" in category else category
@@ -912,14 +910,14 @@ class CouncilGoldLabeler(GoldLabelGenerator):
 
 class SafeCodeExtractor:
     """Extract safe code samples from repositories."""
-    
+
     EXTENSIONS = {".py", ".js", ".ts", ".java", ".go", ".rb"}
-    
+
     def __init__(self, seed: int = 42, max_samples_per_repo: int = 100):
         self.seed = seed
         self.max_samples_per_repo = max_samples_per_repo
         self.rng = random.Random(seed)
-    
+
     def extract_safe_samples(
         self,
         repos_dir: Path,
@@ -927,67 +925,67 @@ class SafeCodeExtractor:
     ) -> list[tuple[str, str, str]]:
         """
         Extract safe code samples from repositories.
-        
+
         Args:
             repos_dir: Root directory containing repositories
             exclude_files: Files that have scanner findings (avoid those)
-        
+
         Returns:
             List of (code, file_path, category) tuples
         """
         samples = []
-        
+
         # Normalize exclude paths
         exclude_normalized = {Path(f).resolve() for f in exclude_files if f}
-        
+
         for repo_dir in sorted(repos_dir.iterdir()):
             if not repo_dir.is_dir():
                 continue
-            
+
             repo_samples = []
             code_files = list(repo_dir.rglob("*"))
             self.rng.shuffle(code_files)
-            
+
             for file_path in code_files:
                 if len(repo_samples) >= self.max_samples_per_repo:
                     break
-                
+
                 if not file_path.is_file():
                     continue
-                
+
                 if file_path.suffix not in self.EXTENSIONS:
                     continue
-                
+
                 # Skip files with findings
                 if file_path.resolve() in exclude_normalized:
                     continue
-                
+
                 # Skip test files
                 if "test" in file_path.name.lower():
                     continue
-                
+
                 try:
                     code = file_path.read_text(encoding="utf-8", errors="ignore")
                 except Exception:
                     continue
-                
+
                 if len(code) < 50 or len(code) > 10000:
                     continue
-                
+
                 # Extract function/class snippets
                 snippets = self._extract_snippets(code, str(file_path))
                 for snippet, category in snippets[:5]:  # Max 5 per file
                     if len(repo_samples) < self.max_samples_per_repo:
                         repo_samples.append((snippet, str(file_path), category))
-            
+
             samples.extend(repo_samples)
-        
+
         return samples
-    
+
     def _extract_snippets(self, code: str, file_path: str) -> list[tuple[str, str]]:
         """Extract code snippets from a file."""
         snippets = []
-        
+
         # Try to parse as Python
         if file_path.endswith(".py"):
             try:
@@ -1007,18 +1005,18 @@ class SafeCodeExtractor:
                             snippets.append((snippet, "safe_class"))
             except SyntaxError:
                 pass
-        
+
         # Fallback: extract random chunks
         if not snippets:
             lines = code.split("\n")
             chunk_size = 20
             for i in range(0, len(lines) - chunk_size, chunk_size // 2):
-                snippet = "\n".join(lines[i:i + chunk_size])
+                snippet = "\n".join(lines[i : i + chunk_size])
                 if len(snippet) > 50:
                     snippets.append((snippet, "safe_code"))
-        
+
         return snippets
-    
+
     def _extract_lines(self, code: str, start: int, end: int) -> str:
         """Extract lines from code."""
         lines = code.split("\n")
@@ -1029,11 +1027,11 @@ class SafeCodeExtractor:
 
 class DatasetBuilder:
     """Build balanced train/test/val datasets."""
-    
+
     def __init__(self, seed: int = 42):
         self.seed = seed
         self.rng = random.Random(seed)
-    
+
     def build_balanced_splits(
         self,
         samples: list[GoldSample],
@@ -1047,27 +1045,27 @@ class DatasetBuilder:
     ) -> tuple[list[GoldSample], list[GoldSample], list[GoldSample]]:
         """
         Build balanced train/val/test splits.
-        
+
         Returns:
             (train, val, test) sample lists
         """
         # Separate by label
         vulnerable = [s for s in samples if s.label == 1]
         safe = [s for s in samples if s.label == 0]
-        
+
         print(f"  Raw samples: {len(vulnerable)} vulnerable, {len(safe)} safe")
-        
+
         # Shuffle
         self.rng.shuffle(vulnerable)
         self.rng.shuffle(safe)
-        
+
         if balance_mode == "none":
             print("  Balance mode: none (using all samples)")
         elif balance_mode == "category":
             vuln_by_category: dict[str, list[GoldSample]] = defaultdict(list)
             for sample in vulnerable:
                 vuln_by_category[sample.category].append(sample)
-            
+
             balanced_vulnerable: list[GoldSample] = []
             for category in sorted(vuln_by_category):
                 items = vuln_by_category[category]
@@ -1079,7 +1077,7 @@ class DatasetBuilder:
                     if needed > 0:
                         items = items + [self.rng.choice(items) for _ in range(needed)]
                 balanced_vulnerable.extend(items)
-            
+
             vulnerable = balanced_vulnerable
             counts = Counter(s.category for s in vulnerable)
             top_counts = sorted(counts.items(), key=lambda x: (-x[1], x[0]))[:8]
@@ -1113,7 +1111,7 @@ class DatasetBuilder:
             vulnerable = vulnerable[:min_count]
             safe = safe[:min_count]
             print(f"  Balance mode: downsample -> {len(vulnerable)} vulnerable, {len(safe)} safe")
-        
+
         # Split each class proportionally
         def split_list(items: list) -> tuple[list, list, list]:
             n = len(items)
@@ -1138,18 +1136,18 @@ class DatasetBuilder:
 
             return (
                 items[:n_train],
-                items[n_train:n_train + n_val],
-                items[n_train + n_val:n_train + n_val + n_test],
+                items[n_train : n_train + n_val],
+                items[n_train + n_val : n_train + n_val + n_test],
             )
-        
+
         vuln_train, vuln_val, vuln_test = split_list(vulnerable)
         safe_train, safe_val, safe_test = split_list(safe)
-        
+
         # Combine and shuffle
         train = vuln_train + safe_train
         val = vuln_val + safe_val
         test = vuln_test + safe_test
-        
+
         self.rng.shuffle(train)
         self.rng.shuffle(val)
         self.rng.shuffle(test)
@@ -1158,7 +1156,7 @@ class DatasetBuilder:
         self.rng.shuffle(train)
         self.rng.shuffle(val)
         self.rng.shuffle(test)
-        
+
         return train, val, test
 
     def _ensure_class_presence(
@@ -1198,7 +1196,7 @@ class DatasetBuilder:
         _adjust("val", val, train)
         _adjust("test", test, train)
         return train, val, test
-    
+
     def save_datasets(
         self,
         train: list[GoldSample],
@@ -1210,7 +1208,7 @@ class DatasetBuilder:
         """Save datasets to JSONL files."""
         dataset_dir = output_dir / dataset_name
         dataset_dir.mkdir(parents=True, exist_ok=True)
-        
+
         paths = {}
         for split_name, samples in [("train", train), ("val", val), ("test", test)]:
             path = dataset_dir / f"{split_name}.jsonl"
@@ -1218,7 +1216,7 @@ class DatasetBuilder:
                 for sample in samples:
                     f.write(json.dumps(sample.to_dict()) + "\n")
             paths[split_name] = path
-        
+
         # Save stats
         stats = {
             "created_at": datetime.now(UTC).isoformat(),
@@ -1234,7 +1232,7 @@ class DatasetBuilder:
             json.dumps(stats, indent=2),
             encoding="utf-8",
         )
-        
+
         return paths
 
 
@@ -1245,15 +1243,15 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
         "args": vars(args),
         "steps": {},
     }
-    
+
     repos_dir = Path(args.repos_dir)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     print("=" * 70)
     print("  ML Data Pipeline")
     print("=" * 70)
-    
+
     # Step 1: Scan repositories
     print("\n[1/5] Scanning repositories with multiple scanners...")
     rule_allowlist = _load_allowlist(args.rule_allowlist)
@@ -1311,7 +1309,7 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
             used_rule_allowlist,
             used_category_allowlist,
         )
-    
+
     results["steps"]["scan"] = {
         "total_findings": len(all_findings),
         "repos_scanned": len([d for d in repos_dir.iterdir() if d.is_dir()]),
@@ -1331,17 +1329,17 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
         results_path = output_dir / "data_pipeline_results.json"
         results_path.write_text(json.dumps(results, indent=2), encoding="utf-8")
         raise SystemExit("No findings produced; aborting due to --fail-on-empty")
-    
+
     # Step 2: Extract safe code samples
     print("\n[2/5] Extracting safe code samples...")
     safe_extractor = SafeCodeExtractor(seed=args.seed, max_samples_per_repo=args.max_samples)
     safe_samples = safe_extractor.extract_safe_samples(repos_dir, finding_files)
     print(f"  Extracted {len(safe_samples)} safe samples")
-    
+
     results["steps"]["safe_extraction"] = {
         "total_safe_samples": len(safe_samples),
     }
-    
+
     # Step 3: Generate gold labels
     print("\n[3/5] Generating gold labels...")
     contexts = [int(c.strip()) for c in args.augment_contexts.split(",") if c.strip()]
@@ -1362,11 +1360,11 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
             rule_allowlist=used_rule_allowlist,
         )
     gold_samples = labeler.generate_gold_labels(all_findings, safe_samples)
-    
+
     vulnerable = sum(1 for s in gold_samples if s.label == 1)
     safe = sum(1 for s in gold_samples if s.label == 0)
     print(f"  Generated {len(gold_samples)} gold samples ({vulnerable} vuln, {safe} safe)")
-    
+
     categories = sorted({s.category for s in gold_samples if s.category})
     abstained = getattr(labeler, "abstained", 0)
     if abstained:
@@ -1397,7 +1395,7 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
         results_path = output_dir / "data_pipeline_results.json"
         results_path.write_text(json.dumps(results, indent=2), encoding="utf-8")
         raise SystemExit("No categories produced; aborting due to --fail-on-empty")
-    
+
     # Step 4: Build balanced datasets
     print("\n[4/5] Building balanced train/val/test splits...")
     builder = DatasetBuilder(seed=args.seed)
@@ -1411,22 +1409,22 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
         min_pos_per_category=args.min_pos_per_category,
         max_pos_per_category=args.max_pos_per_category,
     )
-    
+
     print(f"  Train: {len(train)} ({sum(1 for s in train if s.label == 1)} vuln)")
     print(f"  Val:   {len(val)} ({sum(1 for s in val if s.label == 1)} vuln)")
     print(f"  Test:  {len(test)} ({sum(1 for s in test if s.label == 1)} vuln)")
-    
+
     # Step 5: Save datasets
     print("\n[5/5] Saving datasets...")
-    
+
     # Save for Transformer
     builder.save_datasets(train, val, test, output_dir, "transformer")
     print(f"  Transformer: {output_dir / 'transformer'}")
-    
+
     # Save for GNN (full dataset; parseable graphs determined at training time)
     builder.save_datasets(train, val, test, output_dir, "gnn")
     print(f"  GNN: {output_dir / 'gnn'} ({len(train)} train samples)")
-    
+
     results["steps"]["datasets"] = {
         "transformer": {
             "train": len(train),
@@ -1439,19 +1437,19 @@ def run_pipeline(args: argparse.Namespace) -> dict[str, Any]:
             "test": len(test),
         },
     }
-    
+
     results["completed_at"] = datetime.now(UTC).isoformat()
     results["success"] = True
-    
+
     # Save results
     results_path = output_dir / "data_pipeline_results.json"
     results_path.write_text(json.dumps(results, indent=2), encoding="utf-8")
-    
+
     print("\n" + "=" * 70)
     print("  Pipeline Complete!")
     print("=" * 70)
     print(f"\n  Results: {results_path}")
-    
+
     return results
 
 

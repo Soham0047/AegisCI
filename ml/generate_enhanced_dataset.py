@@ -3,7 +3,7 @@ Enhanced Dataset Generator
 
 Generates ML training datasets using all 5 security scanners:
 1. Bandit - Python security analysis
-2. Semgrep - Multi-language pattern matching  
+2. Semgrep - Multi-language pattern matching
 3. Secrets Scanner - Hardcoded credential detection
 4. Pattern Scanner - Dangerous code patterns
 5. Dependency Scanner - Known CVE detection
@@ -44,7 +44,7 @@ from ml.consensus import (
 @dataclass
 class EnhancedSample:
     """A training sample with enhanced multi-scanner features."""
-    
+
     sample_id: str
     tokens: list[str]
     token_ids: list[int] | None
@@ -52,20 +52,20 @@ class EnhancedSample:
     verdict: str  # TP, FP, UNCERTAIN
     category: str
     features: dict[str, Any]
-    
+
     # Enhanced fields
     scanner_sources: list[str]
     consensus_score: float
     scanner_count: int
     severity: str
     confidence: str
-    
+
     # Source info
     file_path: str
     line_start: int
     line_end: int
     code_snippet: str
-    
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "sample_id": self.sample_id,
@@ -90,9 +90,9 @@ class EnhancedSample:
 def tokenize_code(code: str) -> list[str]:
     """Simple tokenizer for code snippets."""
     import re
-    
+
     # Split on whitespace and common delimiters
-    tokens = re.findall(r'[a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[^\s\w]', code)
+    tokens = re.findall(r"[a-zA-Z_][a-zA-Z0-9_]*|[0-9]+|[^\s\w]", code)
     return tokens[:512]  # Limit token count
 
 
@@ -104,8 +104,8 @@ def generate_sample_id(file_path: str, line: int, category: str) -> str:
 
 def compute_code_features(code: str, tokens: list[str]) -> dict[str, Any]:
     """Compute code-level features for ML training."""
-    lines = code.split('\n')
-    
+    lines = code.split("\n")
+
     features = {
         # Basic metrics
         "n_lines": len(lines),
@@ -113,31 +113,32 @@ def compute_code_features(code: str, tokens: list[str]) -> dict[str, Any]:
         "n_tokens": len(tokens),
         "avg_line_length": sum(len(l) for l in lines) / max(len(lines), 1),
         "max_line_length": max((len(l) for l in lines), default=0),
-        
         # Code structure
         "n_functions": code.count("def ") + code.count("function "),
         "n_classes": code.count("class "),
         "n_imports": code.count("import ") + code.count("from "),
         "n_comments": code.count("#") + code.count("//") + code.count("/*"),
-        
         # Control flow
         "has_try_except": "try:" in code or "try {" in code,
         "has_assert": "assert " in code,
         "has_logging": "logger." in code or "logging." in code or "console.log" in code,
-        
         # Security indicators
-        "has_hardcoded_string": '\"sk-' in code or '\"pk_' in code or '\"aws_' in code.lower(),
-        "has_sql_keywords": any(kw in code.upper() for kw in ["SELECT", "INSERT", "UPDATE", "DELETE"]),
-        "has_shell_calls": any(fn in code for fn in ["os.system", "subprocess", "shell=True", "exec("]),
+        "has_hardcoded_string": '"sk-' in code or '"pk_' in code or '"aws_' in code.lower(),
+        "has_sql_keywords": any(
+            kw in code.upper() for kw in ["SELECT", "INSERT", "UPDATE", "DELETE"]
+        ),
+        "has_shell_calls": any(
+            fn in code for fn in ["os.system", "subprocess", "shell=True", "exec("]
+        ),
         "has_file_ops": any(fn in code for fn in ["open(", ".read(", ".write(", "file"]),
         "has_network": any(fn in code for fn in ["requests.", "http", "socket", "urllib"]),
         "has_crypto": any(fn in code for fn in ["hashlib", "crypto", "encrypt", "decrypt"]),
         "has_user_input": any(fn in code for fn in ["request.", "input(", "argv", "args"]),
-        
         # Indentation depth
-        "indentation_depth": max((len(l) - len(l.lstrip()) for l in lines if l.strip()), default=0) // 4,
+        "indentation_depth": max((len(l) - len(l.lstrip()) for l in lines if l.strip()), default=0)
+        // 4,
     }
-    
+
     return features
 
 
@@ -146,13 +147,13 @@ def unified_finding_to_sample(finding: UnifiedFinding) -> EnhancedSample:
     tokens = tokenize_code(finding.code_snippet)
     label = get_consensus_label(finding)
     verdict = "TP" if label == 1 else "FP" if label == 0 else "UNCERTAIN"
-    
+
     # Compute code features
     code_features = compute_code_features(finding.code_snippet, tokens)
-    
+
     # Merge with consensus features
     all_features = {**code_features, **finding.features}
-    
+
     return EnhancedSample(
         sample_id=generate_sample_id(finding.file_path, finding.line_start, finding.category),
         tokens=tokens,
@@ -180,7 +181,7 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
     from guardian.scanners.pattern_scanner import run_comprehensive_scan
     from guardian.scanners.secrets_scanner import run_secrets_scanner
     from guardian.scanners.semgrep_scanner import run_semgrep
-    
+
     results = {
         "bandit": [],
         "semgrep": [],
@@ -188,15 +189,15 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
         "patterns": [],
         "dependencies": [],
     }
-    
+
     if verbose:
         print(f"🔍 Scanning {target_path}...")
-    
+
     # Collect files by type
     py_files = []
     js_ts_files = []
     all_files = []
-    
+
     if target_path.is_file():
         all_files = [str(target_path)]
         if target_path.suffix == ".py":
@@ -205,11 +206,17 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
             js_ts_files = [str(target_path)]
     else:
         for ext in ["*.py"]:
-            py_files.extend(str(f) for f in target_path.rglob(ext) if ".venv" not in str(f) and "node_modules" not in str(f))
+            py_files.extend(
+                str(f)
+                for f in target_path.rglob(ext)
+                if ".venv" not in str(f) and "node_modules" not in str(f)
+            )
         for ext in ["*.js", "*.ts", "*.jsx", "*.tsx"]:
-            js_ts_files.extend(str(f) for f in target_path.rglob(ext) if "node_modules" not in str(f))
+            js_ts_files.extend(
+                str(f) for f in target_path.rglob(ext) if "node_modules" not in str(f)
+            )
         all_files = py_files + js_ts_files
-    
+
     # Run Bandit (Python only)
     try:
         if verbose:
@@ -226,7 +233,7 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
     except Exception as e:
         if verbose:
             print(f"      ⚠️ Bandit failed: {e}")
-    
+
     # Run Semgrep
     try:
         if verbose:
@@ -243,7 +250,7 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
     except Exception as e:
         if verbose:
             print(f"      ⚠️ Semgrep failed: {e}")
-    
+
     # Run Secrets Scanner
     try:
         if verbose:
@@ -260,7 +267,7 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
     except Exception as e:
         if verbose:
             print(f"      ⚠️ Secrets scanner failed: {e}")
-    
+
     # Run Pattern Scanner
     try:
         if verbose:
@@ -277,7 +284,7 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
     except Exception as e:
         if verbose:
             print(f"      ⚠️ Pattern scanner failed: {e}")
-    
+
     # Run Dependency Scanner
     try:
         if verbose:
@@ -290,7 +297,7 @@ def run_all_scanners(target_path: Path, verbose: bool = False) -> dict[str, list
     except Exception as e:
         if verbose:
             print(f"      ⚠️ Dependency scanner failed: {e}")
-    
+
     return results
 
 
@@ -303,20 +310,21 @@ def generate_enhanced_dataset(
 ) -> dict[str, Path]:
     """
     Generate enhanced training dataset from target paths.
-    
+
     Args:
         target_paths: Directories to scan
         output_dir: Where to save the dataset
         split_ratios: (train, val, test) split ratios
         seed: Random seed for reproducibility
         verbose: Print progress
-    
+
     Returns:
         Dict mapping split name to file path
     """
     import random
+
     random.seed(seed)
-    
+
     if verbose:
         print("=" * 60)
         print("🚀 Enhanced Dataset Generator")
@@ -324,18 +332,18 @@ def generate_enhanced_dataset(
         print(f"Target paths: {len(target_paths)}")
         print(f"Output dir: {output_dir}")
         print()
-    
+
     all_samples: list[EnhancedSample] = []
-    
+
     for target_path in target_paths:
         if not target_path.exists():
             if verbose:
                 print(f"⚠️ Path not found: {target_path}")
             continue
-        
+
         # Run all scanners
         scanner_results = run_all_scanners(target_path, verbose=verbose)
-        
+
         # Merge results with consensus
         unified_findings = merge_scanner_results(
             bandit_findings=scanner_results["bandit"],
@@ -344,42 +352,46 @@ def generate_enhanced_dataset(
             pattern_findings=scanner_results["patterns"],
             dependency_findings=scanner_results["dependencies"],
         )
-        
+
         if verbose:
             print(f"\n📊 Merged {len(unified_findings)} unique findings")
             stats = compute_statistics(unified_findings)
             print(f"   Average consensus score: {stats.get('avg_consensus_score', 0):.2f}")
             print(f"   By severity: {stats.get('by_severity', {})}")
             print()
-        
+
         # Convert to samples
         for finding in unified_findings:
             sample = unified_finding_to_sample(finding)
             all_samples.append(sample)
-    
+
     if not all_samples:
         if verbose:
             print("⚠️ No samples generated. Using synthetic data...")
         all_samples = generate_synthetic_samples(100)
-    
+
     # Shuffle and split
     random.shuffle(all_samples)
-    
+
     n_total = len(all_samples)
     n_train = int(n_total * split_ratios[0])
     n_val = int(n_total * split_ratios[1])
-    
+
     train_samples = all_samples[:n_train]
-    val_samples = all_samples[n_train:n_train + n_val]
-    test_samples = all_samples[n_train + n_val:]
-    
+    val_samples = all_samples[n_train : n_train + n_val]
+    test_samples = all_samples[n_train + n_val :]
+
     # Ensure output directory exists
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Save splits
     output_files = {}
-    
-    for split_name, samples in [("train", train_samples), ("val", val_samples), ("test", test_samples)]:
+
+    for split_name, samples in [
+        ("train", train_samples),
+        ("val", val_samples),
+        ("test", test_samples),
+    ]:
         # Save for transformer
         transformer_path = output_dir / "transformer" / f"{split_name}.jsonl"
         transformer_path.parent.mkdir(parents=True, exist_ok=True)
@@ -387,7 +399,7 @@ def generate_enhanced_dataset(
             for sample in samples:
                 f.write(json.dumps(sample.to_dict()) + "\n")
         output_files[f"transformer_{split_name}"] = transformer_path
-        
+
         # Save for GNN (same format, different directory)
         gnn_path = output_dir / "gnn" / f"{split_name}.jsonl"
         gnn_path.parent.mkdir(parents=True, exist_ok=True)
@@ -395,7 +407,7 @@ def generate_enhanced_dataset(
             for sample in samples:
                 f.write(json.dumps(sample.to_dict()) + "\n")
         output_files[f"gnn_{split_name}"] = gnn_path
-    
+
     if verbose:
         print("=" * 60)
         print("✅ Dataset generation complete!")
@@ -404,7 +416,7 @@ def generate_enhanced_dataset(
         print(f"   Test samples: {len(test_samples)}")
         print(f"   Output: {output_dir}")
         print("=" * 60)
-    
+
     # Save metadata
     metadata = {
         "created_at": datetime.now(UTC).isoformat(),
@@ -419,19 +431,23 @@ def generate_enhanced_dataset(
     }
     metadata_path = output_dir / "metadata.json"
     metadata_path.write_text(json.dumps(metadata, indent=2))
-    
+
     return output_files
 
 
 def generate_synthetic_samples(count: int = 100) -> list[EnhancedSample]:
     """Generate synthetic training samples for testing."""
     import random
-    
+
     samples = []
-    
+
     # Vulnerability patterns
     vuln_patterns = [
-        ("sql.injection", 'cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")', ["bandit", "semgrep", "patterns"]),
+        (
+            "sql.injection",
+            'cursor.execute(f"SELECT * FROM users WHERE id = {user_id}")',
+            ["bandit", "semgrep", "patterns"],
+        ),
         ("command.injection", 'os.system(f"rm -rf {path}")', ["bandit", "semgrep", "patterns"]),
         ("xss", 'return f"<div>{user_input}</div>"', ["semgrep", "patterns"]),
         ("hardcoded.secrets", 'API_KEY = "sk-1234567890abcdef"', ["secrets", "bandit", "semgrep"]),
@@ -440,15 +456,19 @@ def generate_synthetic_samples(count: int = 100) -> list[EnhancedSample]:
         ("crypto.weak", "hashlib.md5(password).hexdigest()", ["bandit", "semgrep"]),
         ("ssrf", 'requests.get(f"http://{user_url}")', ["semgrep", "patterns"]),
     ]
-    
+
     # Safe patterns (for FP samples)
     safe_patterns = [
-        ("misc.safe_code", 'cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))', ["bandit"]),
+        (
+            "misc.safe_code",
+            'cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))',
+            ["bandit"],
+        ),
         ("misc.safe_code", 'subprocess.run(["ls", "-la"], check=True)', []),
         ("misc.safe_code", "html.escape(user_input)", []),
-        ("misc.safe_code", 'secrets.token_urlsafe(32)', []),
+        ("misc.safe_code", "secrets.token_urlsafe(32)", []),
     ]
-    
+
     for i in range(count):
         if random.random() < 0.7:
             # True positive
@@ -462,12 +482,12 @@ def generate_synthetic_samples(count: int = 100) -> list[EnhancedSample]:
             label = 0
             verdict = "FP"
             scanner_count = len(scanners)
-        
+
         tokens = tokenize_code(code)
         features = compute_code_features(code, tokens)
         features["scanner_count"] = scanner_count
         features["scanner_agreement_ratio"] = scanner_count / 5.0
-        
+
         sample = EnhancedSample(
             sample_id=generate_sample_id(f"synthetic_{i}.py", i, category),
             tokens=tokens,
@@ -487,14 +507,14 @@ def generate_synthetic_samples(count: int = 100) -> list[EnhancedSample]:
             code_snippet=code,
         )
         samples.append(sample)
-    
+
     return samples
 
 
 def main():
     """CLI entry point."""
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="Generate enhanced ML training dataset")
     parser.add_argument(
         "--targets",
@@ -532,11 +552,11 @@ def main():
         action="store_true",
         help="Reduce output",
     )
-    
+
     args = parser.parse_args()
-    
+
     split_ratios = tuple(float(x) for x in args.split.split(","))
-    
+
     generate_enhanced_dataset(
         target_paths=args.targets,
         output_dir=args.output,

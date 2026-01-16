@@ -54,9 +54,7 @@ def compute_metrics(
         if filtered:
             labels, rows = zip(*filtered)
             try:
-                cat_preds = [
-                    int(max(range(num_categories), key=lambda i: row[i])) for row in rows
-                ]
+                cat_preds = [int(max(range(num_categories), key=lambda i: row[i])) for row in rows]
                 macro_f1 = f1_score(list(labels), cat_preds, average="macro", zero_division=0)
             except ValueError:
                 macro_f1 = 0.0

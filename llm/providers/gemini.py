@@ -14,7 +14,9 @@ class GeminiProvider:
         if not api_key:
             raise RuntimeError("GEMINI_API_KEY not set")
         base_url = os.environ.get("PATCH_LLM_BASE_URL", "https://generativelanguage.googleapis.com")
-        model = os.environ.get("GUARDIAN_GEMINI_MODEL") or os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+        model = os.environ.get("GUARDIAN_GEMINI_MODEL") or os.environ.get(
+            "GEMINI_MODEL", "gemini-2.0-flash"
+        )
         temperature = float(os.environ.get("PATCH_LLM_TEMPERATURE", "0"))
         max_tokens = int(os.environ.get("PATCH_LLM_MAX_TOKENS", "800"))
 
@@ -41,7 +43,9 @@ class GeminiProvider:
         if not api_key:
             raise RuntimeError("GEMINI_API_KEY not set")
         base_url = os.environ.get("PATCH_LLM_BASE_URL", "https://generativelanguage.googleapis.com")
-        model = os.environ.get("GUARDIAN_GEMINI_MODEL") or os.environ.get("GEMINI_MODEL", "gemini-2.0-flash")
+        model = os.environ.get("GUARDIAN_GEMINI_MODEL") or os.environ.get(
+            "GEMINI_MODEL", "gemini-2.0-flash"
+        )
         prompt = _build_explain_prompt(context)
         body = {"contents": [{"parts": [{"text": prompt}]}]}
         req = urllib.request.Request(

@@ -45,14 +45,22 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-prefix", default="models", help="Prefix for models in GCS")
     parser.add_argument("--repos-bucket", default="", help="GCS bucket with repos (optional)")
     parser.add_argument("--repos-prefix", default="repos", help="Prefix for repos in GCS")
-    parser.add_argument("--run-data-pipeline", action="store_true", help="Run data pipeline in cloud")
+    parser.add_argument(
+        "--run-data-pipeline", action="store_true", help="Run data pipeline in cloud"
+    )
     parser.add_argument("--max-files", type=int, default=600, help="Max files per repo")
     parser.add_argument("--max-samples", type=int, default=15000, help="Max safe samples per repo")
     parser.add_argument("--balance-mode", default="ratio", help="Balance mode")
     parser.add_argument("--max-safe-ratio", type=float, default=10.0, help="Max safe ratio")
-    parser.add_argument("--min-pos-per-category", type=int, default=0, help="Min positives per category")
-    parser.add_argument("--max-pos-per-category", type=int, default=0, help="Max positives per category")
-    parser.add_argument("--augment-contexts", default="3", help="Context sizes for vuln augmentation")
+    parser.add_argument(
+        "--min-pos-per-category", type=int, default=0, help="Min positives per category"
+    )
+    parser.add_argument(
+        "--max-pos-per-category", type=int, default=0, help="Max positives per category"
+    )
+    parser.add_argument(
+        "--augment-contexts", default="3", help="Context sizes for vuln augmentation"
+    )
     parser.add_argument("--semgrep-config", default="max", help="Semgrep config for data pipeline")
     parser.add_argument(
         "--semgrep-experimental",
@@ -186,7 +194,9 @@ def main() -> None:
         _run_eval(models_dir, datasets_dir, args.device, args.batch_size)
 
         print("[cloud_train] uploading metrics")
-        upload_to_gcs(models_dir / "metrics", args.models_bucket, f"{args.eval_model_prefix}/metrics")
+        upload_to_gcs(
+            models_dir / "metrics", args.models_bucket, f"{args.eval_model_prefix}/metrics"
+        )
         print("[cloud_train] complete")
         return
 

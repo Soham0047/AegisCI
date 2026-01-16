@@ -36,7 +36,7 @@ class RetrievalTriple:
 @dataclass
 class CodeSample:
     """A labeled code sample for training."""
-    
+
     sample_id: str
     code: str
     label: Literal["vuln", "safe"]
@@ -48,7 +48,7 @@ class CodeSample:
 @dataclass
 class BalancedDataset:
     """A balanced dataset with train/val/test splits."""
-    
+
     train: list[CodeSample]
     val: list[CodeSample]
     test: list[CodeSample]
@@ -363,20 +363,20 @@ def _extract_code_snippets(
 ) -> list[tuple[str, int, int]]:
     """
     Extract code snippets from a file.
-    
+
     Returns list of (snippet_text, start_line, end_line).
     """
     try:
         content = path.read_text(encoding="utf-8", errors="ignore")
     except Exception:
         return []
-    
+
     lines = content.split("\n")
     if len(lines) < min_lines:
         return []
-    
+
     snippets = []
-    
+
     # Extract overlapping windows
     for start in range(0, len(lines), max_lines // 2):
         end = min(start + max_lines, len(lines))
@@ -385,7 +385,7 @@ def _extract_code_snippets(
             snippets.append((snippet, start + 1, end))
         if end >= len(lines):
             break
-    
+
     return snippets
 
 
@@ -396,21 +396,21 @@ def scan_repos_for_samples(
 ) -> list[CodeSample]:
     """
     Scan repositories for code samples.
-    
+
     Labels samples as "vuln" or "safe" based on pattern detection.
     """
     rng = random.Random(seed)
     samples: list[CodeSample] = []
-    
+
     if not repos_root.exists():
         return samples
-    
+
     # Find all code files
     all_files: list[Path] = []
     for lang, extensions in _LANG_EXTENSIONS.items():
         for ext in extensions:
             all_files.extend(repos_root.rglob(f"*{ext}"))
-    
+
     # Group by repo
     repo_files: dict[str, list[Path]] = {}
     for file_path in all_files:
@@ -420,49 +420,51 @@ def scan_repos_for_samples(
             repo_name = rel_path.parts[0] if rel_path.parts else "unknown"
         except ValueError:
             repo_name = "unknown"
-        
+
         if repo_name not in repo_files:
             repo_files[repo_name] = []
         repo_files[repo_name].append(file_path)
-    
+
     # Process each repo
     for repo_name, files in sorted(repo_files.items()):
         repo_samples: list[CodeSample] = []
         rng.shuffle(files)
-        
+
         for file_path in files:
             if len(repo_samples) >= max_samples_per_repo:
                 break
-            
+
             language = _detect_language(file_path)
             if not language:
                 continue
-            
+
             snippets = _extract_code_snippets(file_path)
             for snippet, start, end in snippets:
                 if len(repo_samples) >= max_samples_per_repo:
                     break
-                
+
                 is_vuln, category = _is_vulnerable_code(snippet)
                 label: Literal["vuln", "safe"] = "vuln" if is_vuln else "safe"
-                
+
                 sample_id = _stable_id(f"{repo_name}:{file_path.name}:{start}:{end}")
-                repo_samples.append(CodeSample(
-                    sample_id=sample_id,
-                    code=snippet,
-                    label=label,
-                    source=repo_name,
-                    language=language,
-                    metadata={
-                        "file": file_path.name,
-                        "start_line": str(start),
-                        "end_line": str(end),
-                        "category": category or "",
-                    },
-                ))
-        
+                repo_samples.append(
+                    CodeSample(
+                        sample_id=sample_id,
+                        code=snippet,
+                        label=label,
+                        source=repo_name,
+                        language=language,
+                        metadata={
+                            "file": file_path.name,
+                            "start_line": str(start),
+                            "end_line": str(end),
+                            "category": category or "",
+                        },
+                    )
+                )
+
         samples.extend(repo_samples)
-    
+
     return samples
 
 
@@ -475,37 +477,37 @@ def balance_dataset(
 ) -> list[CodeSample]:
     """
     Balance a dataset to achieve desired ratio.
-    
+
     Args:
         samples: Input samples
         balance_ratio: Target ratio of vuln samples (0.5 = 50/50)
         seed: Random seed for determinism
         max_samples_per_class: Maximum samples per class
         strategy: "downsample" majority or "oversample" minority
-    
+
     Returns:
         Balanced list of samples
     """
     rng = random.Random(seed)
-    
+
     # Separate by label
     vuln_samples = [s for s in samples if s.label == "vuln"]
     safe_samples = [s for s in samples if s.label == "safe"]
-    
+
     # Shuffle deterministically
     rng.shuffle(vuln_samples)
     rng.shuffle(safe_samples)
-    
+
     if max_samples_per_class:
         vuln_samples = vuln_samples[:max_samples_per_class]
         safe_samples = safe_samples[:max_samples_per_class]
-    
+
     n_vuln = len(vuln_samples)
     n_safe = len(safe_samples)
-    
+
     if n_vuln == 0 or n_safe == 0:
         return vuln_samples + safe_samples
-    
+
     # Calculate target counts based on ratio
     if strategy == "downsample":
         # Downsample majority class
@@ -532,11 +534,11 @@ def balance_dataset(
             target = n_vuln
             while len(safe_samples) < target:
                 safe_samples.append(rng.choice(safe_samples[:n_safe]))
-    
+
     # Combine and shuffle
     balanced = vuln_samples + safe_samples
     rng.shuffle(balanced)
-    
+
     return balanced
 
 
@@ -549,41 +551,41 @@ def split_dataset(
 ) -> BalancedDataset:
     """
     Split samples into train/val/test sets.
-    
+
     Preserves class balance within each split.
     """
     rng = random.Random(seed)
-    
+
     # Separate by label
     vuln_samples = [s for s in samples if s.label == "vuln"]
     safe_samples = [s for s in samples if s.label == "safe"]
-    
+
     # Shuffle
     rng.shuffle(vuln_samples)
     rng.shuffle(safe_samples)
-    
+
     def split_list(items: list) -> tuple[list, list, list]:
         n = len(items)
         n_train = int(n * train_ratio)
         n_val = int(n * val_ratio)
         return (
             items[:n_train],
-            items[n_train:n_train + n_val],
-            items[n_train + n_val:],
+            items[n_train : n_train + n_val],
+            items[n_train + n_val :],
         )
-    
+
     vuln_train, vuln_val, vuln_test = split_list(vuln_samples)
     safe_train, safe_val, safe_test = split_list(safe_samples)
-    
+
     train = vuln_train + safe_train
     val = vuln_val + safe_val
     test = vuln_test + safe_test
-    
+
     # Shuffle each split
     rng.shuffle(train)
     rng.shuffle(val)
     rng.shuffle(test)
-    
+
     stats = {
         "total_samples": len(samples),
         "train_size": len(train),
@@ -596,7 +598,7 @@ def split_dataset(
         "test_vuln": len(vuln_test),
         "test_safe": len(safe_test),
     }
-    
+
     return BalancedDataset(train=train, val=val, test=test, stats=stats)
 
 
@@ -614,7 +616,7 @@ def build_balanced_dataset(
 ) -> BalancedDataset:
     """
     Build a balanced dataset from repository code.
-    
+
     Args:
         repos_root: Root directory containing repositories
         output_dir: Output directory for JSONL files
@@ -626,13 +628,13 @@ def build_balanced_dataset(
         test_ratio: Test set ratio
         seed: Random seed
         augment_k: Number of augmented variants per sample (0 = no augmentation)
-    
+
     Returns:
         BalancedDataset with splits
     """
     # Scan repos
     samples = scan_repos_for_samples(repos_root, max_samples_per_repo, seed)
-    
+
     # Balance
     balanced = balance_dataset(
         samples,
@@ -640,18 +642,18 @@ def build_balanced_dataset(
         seed=seed,
         max_samples_per_class=max_samples_per_class,
     )
-    
+
     # Apply augmentation if requested
     if augment_k > 0:
         from rag.dl.augment import generate_augmented_variants, AugmentConfig
-        
+
         augmented_samples: list[CodeSample] = []
         config = AugmentConfig()
-        
+
         for sample in balanced:
             # Keep original
             augmented_samples.append(sample)
-            
+
             # Generate augmented variants
             variants = generate_augmented_variants(
                 sample.code,
@@ -660,7 +662,7 @@ def build_balanced_dataset(
                 base_seed=seed,
                 config=config,
             )
-            
+
             for i, variant in enumerate(variants):
                 if variant.augmented != sample.code:
                     aug_sample = CodeSample(
@@ -677,9 +679,9 @@ def build_balanced_dataset(
                         },
                     )
                     augmented_samples.append(aug_sample)
-        
+
         balanced = augmented_samples
-    
+
     # Split
     dataset = split_dataset(
         balanced,
@@ -688,10 +690,10 @@ def build_balanced_dataset(
         test_ratio=test_ratio,
         seed=seed,
     )
-    
+
     # Save to disk
     output_dir.mkdir(parents=True, exist_ok=True)
-    
+
     for split_name, split_samples in [
         ("train", dataset.train),
         ("val", dataset.val),
@@ -709,11 +711,11 @@ def build_balanced_dataset(
                     "metadata": sample.metadata,
                 }
                 f.write(json.dumps(record) + "\n")
-    
+
     # Save stats
     stats_path = output_dir / "stats.json"
     stats_path.write_text(json.dumps(dataset.stats, indent=2), encoding="utf-8")
-    
+
     return dataset
 
 
@@ -724,12 +726,14 @@ def load_code_samples(path: Path) -> list[CodeSample]:
         if not line.strip():
             continue
         data = json.loads(line)
-        samples.append(CodeSample(
-            sample_id=data["sample_id"],
-            code=data["code"],
-            label=data["label"],
-            source=data.get("source", "unknown"),
-            language=data.get("language", "unknown"),
-            metadata=data.get("metadata", {}),
-        ))
+        samples.append(
+            CodeSample(
+                sample_id=data["sample_id"],
+                code=data["code"],
+                label=data["label"],
+                source=data.get("source", "unknown"),
+                language=data.get("language", "unknown"),
+                metadata=data.get("metadata", {}),
+            )
+        )
     return samples

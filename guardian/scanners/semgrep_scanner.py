@@ -26,24 +26,20 @@ SEMGREP_RULESETS = {
     "security-audit": "p/security-audit",
     "owasp": "p/owasp-top-ten",
     "secrets": "p/secrets",
-    
     # Language-specific rulesets
     "python": "p/python",
     "javascript": "p/javascript",
     "typescript": "p/typescript",
     "nodejs": "p/nodejs",
     "react": "p/react",
-    
     # Vulnerability-specific rulesets
     "sql-injection": "p/sql-injection",
     "xss": "p/xss",
     "command-injection": "p/command-injection",
-    
     # Framework-specific
     "django": "p/django",
     "flask": "p/flask",
     "nextjs": "p/nextjs",
-    
     # Default CI ruleset
     "ci": "p/ci",
 }
@@ -81,7 +77,7 @@ def run_semgrep(
 ) -> dict[str, Any]:
     """
     Run Semgrep on provided files with comprehensive security rules.
-    
+
     Args:
         files: List of files to scan
         config: Semgrep config (single or multiple rulesets)
@@ -89,7 +85,7 @@ def run_semgrep(
         max_target_bytes: Max file size to scan
         include_experimental: Include experimental rules
         autofix: Include autofix suggestions
-    
+
     Returns:
         JSON-like dict with results and errors
     """
@@ -100,30 +96,33 @@ def run_semgrep(
     cmd = [
         "semgrep",
         "--json",
-        "--timeout", str(timeout),
-        "--max-target-bytes", str(max_target_bytes),
+        "--timeout",
+        str(timeout),
+        "--max-target-bytes",
+        str(max_target_bytes),
         "--no-git-ignore",  # Scan all files, not just tracked
-        "--metrics", "off",  # Don't send metrics
+        "--metrics",
+        "off",  # Don't send metrics
     ]
-    
+
     # Add configs
     if isinstance(config, str):
         configs = [config]
     else:
         configs = config
-    
+
     for cfg in configs:
         cmd.extend(["--config", cfg])
-    
+
     # Add experimental flag
     if include_experimental:
         cmd.append("--include-experimental")
-    
+
     # Add autofix flag
     if autofix:
         cmd.append("--autofix")
         cmd.append("--dryrun")  # Don't actually modify files
-    
+
     # Add files
     cmd.extend(files)
 
@@ -134,7 +133,7 @@ def run_semgrep(
             text=True,
             timeout=timeout + 30,  # Extra buffer for startup
         )
-        
+
         # Semgrep may exit non-zero on findings
         output = result.stdout or result.stderr
         try:
@@ -149,7 +148,7 @@ def run_semgrep(
                 "errors": [f"Failed to parse semgrep output: {output[:500]}"],
                 "paths": {"scanned": files},
             }
-            
+
     except FileNotFoundError:
         return {
             "results": [],
@@ -176,20 +175,20 @@ def run_semgrep_comprehensive(
 ) -> dict[str, Any]:
     """
     Run Semgrep with comprehensive security rulesets.
-    
+
     Automatically selects appropriate rulesets based on file extensions.
     """
     if not files:
         return {"results": [], "errors": [], "paths": {"scanned": []}}
-    
+
     # Determine which rulesets to use based on file types
     rulesets = set(DEFAULT_RULESETS)
-    
+
     for file in files:
         for ext, ext_rulesets in LANGUAGE_RULESETS.items():
             if file.endswith(ext):
                 rulesets.update(ext_rulesets)
-    
+
     aggregated: dict[str, Any] = {
         "results": [],
         "errors": [],
@@ -236,6 +235,7 @@ def run_semgrep_max(files: list[str], include_experimental: bool = True) -> dict
 
     return aggregated
 
+
 def run_semgrep_secrets(files: list[str]) -> dict[str, Any]:
     """Run Semgrep specifically for secrets detection."""
     return run_semgrep(files, config="p/secrets")
@@ -263,8 +263,12 @@ def _get_semgrep_version() -> str:
 # Semgrep rule categories for reporting
 SEMGREP_CATEGORIES = {
     "injection": [
-        "sql-injection", "command-injection", "code-injection",
-        "ldap-injection", "xpath-injection", "nosql-injection"
+        "sql-injection",
+        "command-injection",
+        "code-injection",
+        "ldap-injection",
+        "xpath-injection",
+        "nosql-injection",
     ],
     "xss": ["xss", "reflected-xss", "stored-xss", "dom-xss"],
     "auth": ["auth", "authentication", "authorization", "session"],

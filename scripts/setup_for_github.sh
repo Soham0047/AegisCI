@@ -45,11 +45,11 @@ if [[ -n "$LARGE_FILES" ]]; then
         echo "   - $f ($size)"
     done
     echo ""
-    
+
     # Check if Git LFS is installed
     if command -v git-lfs &> /dev/null; then
         echo "✅ Git LFS is installed"
-        
+
         read -p "Would you like to set up Git LFS for large models? (y/n) " -n 1 -r
         echo ""
         if [[ $REPLY =~ ^[Yy]$ ]]; then

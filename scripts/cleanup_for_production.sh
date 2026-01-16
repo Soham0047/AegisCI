@@ -33,7 +33,7 @@ echo ""
 remove_path() {
     local path="$1"
     local description="$2"
-    
+
     if [[ -e "$path" ]]; then
         size=$(du -sh "$path" 2>/dev/null | cut -f1 || echo "0")
         if $DRY_RUN; then

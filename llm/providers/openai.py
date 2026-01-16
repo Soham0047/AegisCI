@@ -14,7 +14,9 @@ class OpenAIProvider:
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY not set")
         base_url = os.environ.get("PATCH_LLM_BASE_URL", "https://api.openai.com/v1")
-        model = os.environ.get("GUARDIAN_OPENAI_MODEL") or os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+        model = os.environ.get("GUARDIAN_OPENAI_MODEL") or os.environ.get(
+            "OPENAI_MODEL", "gpt-4o-mini"
+        )
         temperature = float(os.environ.get("PATCH_LLM_TEMPERATURE", "0"))
         max_tokens = int(os.environ.get("PATCH_LLM_MAX_TOKENS", "800"))
 
@@ -49,7 +51,9 @@ class OpenAIProvider:
         if not api_key:
             raise RuntimeError("OPENAI_API_KEY not set")
         base_url = os.environ.get("PATCH_LLM_BASE_URL", "https://api.openai.com/v1")
-        model = os.environ.get("GUARDIAN_OPENAI_MODEL") or os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+        model = os.environ.get("GUARDIAN_OPENAI_MODEL") or os.environ.get(
+            "OPENAI_MODEL", "gpt-4o-mini"
+        )
         prompt = _build_explain_prompt(context)
         body = {
             "model": model,

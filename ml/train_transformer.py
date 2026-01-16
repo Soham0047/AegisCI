@@ -131,11 +131,11 @@ def _extract_risk_label(item: dict[str, Any]) -> int | None:
             return int(item["label"])
         except (TypeError, ValueError):
             return None
-    
+
     # Check for is_vulnerable boolean field
     if item.get("is_vulnerable") is not None:
         return 1 if item["is_vulnerable"] else 0
-    
+
     # Check for verdict field
     verdict = item.get("verdict")
     if verdict is None:
@@ -385,9 +385,7 @@ def train(args: argparse.Namespace) -> None:
     if not val_records:
         raise ValueError("No validation records found after filtering")
 
-    category_vocab = sorted(
-        {cat for record in train_records for cat in record.categories if cat}
-    )
+    category_vocab = sorted({cat for record in train_records for cat in record.categories if cat})
     category_to_id = {cat: idx for idx, cat in enumerate(category_vocab)}
     vocab = SimpleVocab.build(record.tokens for record in train_records)
 

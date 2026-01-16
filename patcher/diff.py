@@ -39,8 +39,10 @@ def bundle_diffs(diffs: list[str]) -> str:
     return "".join(parts)
 
 
-_HUNK_RE = re.compile(r"^@@ -(?P<old_start>\d+)(?:,(?P<old_count>\d+))? "
-                      r"\+(?P<new_start>\d+)(?:,(?P<new_count>\d+))? @@")
+_HUNK_RE = re.compile(
+    r"^@@ -(?P<old_start>\d+)(?:,(?P<old_count>\d+))? "
+    r"\+(?P<new_start>\d+)(?:,(?P<new_count>\d+))? @@"
+)
 
 
 def normalize_unified_diff(diff: str) -> str:
@@ -68,7 +70,11 @@ def normalize_unified_diff(diff: str) -> str:
                 next_line = lines[j]
                 if _HUNK_RE.match(next_line):
                     break
-                if next_line.startswith("diff --git") or next_line.startswith("--- ") or next_line.startswith("+++ "):
+                if (
+                    next_line.startswith("diff --git")
+                    or next_line.startswith("--- ")
+                    or next_line.startswith("+++ ")
+                ):
                     break
                 if next_line.startswith("\\"):
                     j += 1

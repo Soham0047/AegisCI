@@ -14,7 +14,9 @@ from ml.models.gnn import GraphClassifier
 from ml.train_gnn import evaluate
 
 
-def _load_checkpoint(path: Path, device: torch.device) -> tuple[GraphClassifier, list[str], dict[str, Any]]:
+def _load_checkpoint(
+    path: Path, device: torch.device
+) -> tuple[GraphClassifier, list[str], dict[str, Any]]:
     ckpt = torch.load(path, map_location=device, weights_only=False)
     category_vocab = ckpt.get("category_vocab", [])
     model = GraphClassifier(

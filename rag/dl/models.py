@@ -29,13 +29,13 @@ class EncoderConfig:
 class PretrainedCodeEncoder(nn.Module):
     """
     Optional pretrained code encoder using CodeBERT or CodeT5.
-    
+
     Falls back gracefully to a simple embedding layer if:
     - Pretrained models are disabled
     - Required libraries (transformers) not installed
     - Model cannot be loaded (offline mode, network issues)
     """
-    
+
     def __init__(
         self,
         model_name: str = "microsoft/codebert-base",
@@ -50,10 +50,10 @@ class PretrainedCodeEncoder(nn.Module):
         self._encoder = None
         self._tokenizer = None
         self._proj = None
-        
+
         # Try to load pretrained model
         self._try_load_pretrained()
-        
+
         # Fallback: simple learned embedding
         if not self._pretrained_loaded:
             logger.info("Using fallback embedding layer (no pretrained model)")
@@ -62,20 +62,20 @@ class PretrainedCodeEncoder(nn.Module):
                 hidden_dim, hidden_dim, batch_first=True, bidirectional=True
             )
             self._fallback_proj = nn.Linear(hidden_dim * 2, hidden_dim)
-    
+
     def _try_load_pretrained(self) -> None:
         """Attempt to load pretrained model with graceful fallback."""
         if not PRETRAINED_MODEL_ENABLED:
             logger.info("Pretrained model disabled (set DL_PRETRAINED_MODEL=1 to enable)")
             return
-        
+
         try:
             from transformers import AutoModel, AutoTokenizer
-            
+
             # Set offline mode if requested
             if self.offline_only or PRETRAINED_MODEL_OFFLINE:
                 os.environ["TRANSFORMERS_OFFLINE"] = "1"
-            
+
             logger.info(f"Loading pretrained model: {self.model_name}")
             self._tokenizer = AutoTokenizer.from_pretrained(
                 self.model_name, local_files_only=self.offline_only
@@ -83,37 +83,37 @@ class PretrainedCodeEncoder(nn.Module):
             self._encoder = AutoModel.from_pretrained(
                 self.model_name, local_files_only=self.offline_only
             )
-            
+
             # Freeze pretrained weights
             for param in self._encoder.parameters():
                 param.requires_grad = False
-            
+
             # Add projection layer
             encoder_dim = self._encoder.config.hidden_size
             self._proj = nn.Linear(encoder_dim, self.hidden_dim)
             self._pretrained_loaded = True
             logger.info(f"Successfully loaded pretrained model: {self.model_name}")
-            
+
         except ImportError:
             logger.warning("transformers library not installed - using fallback")
         except OSError as e:
             logger.warning(f"Could not load pretrained model (offline?): {e}")
         except Exception as e:
             logger.warning(f"Pretrained model load failed: {e}")
-    
+
     @property
     def is_pretrained(self) -> bool:
         """Check if pretrained model is active."""
         return self._pretrained_loaded
-    
+
     def forward(self, tokens: torch.Tensor, lengths: torch.Tensor) -> torch.Tensor:
         """
         Encode tokens to embeddings.
-        
+
         Args:
             tokens: Token IDs [batch, seq_len]
             lengths: Sequence lengths [batch]
-        
+
         Returns:
             Normalized embeddings [batch, hidden_dim]
         """

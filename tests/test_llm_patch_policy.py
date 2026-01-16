@@ -69,13 +69,7 @@ def test_policy_denies_disallowed_addition(tmp_path: Path) -> None:
     repo.mkdir()
     (repo / "app.py").write_text("print('hi')\n", encoding="utf-8")
 
-    diff = (
-        "--- a/app.py\n"
-        "+++ b/app.py\n"
-        "@@ -1,1 +1,1 @@\n"
-        "-print('hi')\n"
-        "+import bcrypt\n"
-    )
+    diff = "--- a/app.py\n" "+++ b/app.py\n" "@@ -1,1 +1,1 @@\n" "-print('hi')\n" "+import bcrypt\n"
     decision = evaluate_llm_diff(
         diff,
         _make_finding("app.py", 1, 1, "injection.xss"),
